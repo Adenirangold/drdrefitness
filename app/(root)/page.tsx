@@ -1,6 +1,7 @@
-import Image from "next/image";
+import connectToDatabase from "@/lib/database";
 
-export default function Home() {
+export default async function Home() {
+   await connectToDatabase()
   return (
     <>
       <main>
