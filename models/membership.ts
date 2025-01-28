@@ -9,27 +9,19 @@ const MembershipPlanSchema = new Schema({
     unique: true,
     trim: true,
   },
-  description: {
-    type: String,
-    required: true,
-  },
 
   price: {
-    amount: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-    currency: {
-      type: String,
-      default: "USD",
-    },
-    billingFrequency: {
-      type: String,
-      enum: ["monthly", "quarterly", "biannual", "annual"],
-      required: true,
-    },
+    type: Number,
+    required: true,
+    min: 0,
+  },
+
+  duration: {
+    type: Number, // in days
+    required: true,
+    min: 0,
   },
 });
 
-export default mongoose.model("MembershipPlan", MembershipPlanSchema);
+const MembershipPlan = mongoose.model("MembershipPlan", MembershipPlanSchema);
+export default MembershipPlan;
