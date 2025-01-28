@@ -10,7 +10,10 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const token = request.cookies.get("token")?.value;
+  // Check for token in cookie (web) or Authorization header (mobile)
+  const token =
+    request.cookies.get("token")?.value ||
+    request.headers.get("Authorization")?.replace("Bearer ", "");
 
   if (!token) {
     return Response.json(
