@@ -1,3 +1,5 @@
+// "email":"adeniranbayogold@gmail.com"
+
 import React from "react";
 
 const forgetPasswordPage = () => {
