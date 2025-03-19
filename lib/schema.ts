@@ -34,101 +34,84 @@ const adminLocationSchema = z.object({
   branch: z.string().min(2).max(50),
 });
 
-export const memberSchema = z
-  .object({
-    regNumber: z.string().min(2).max(50),
-    firstName: z.string().min(2).max(50),
-    lastName: z.string().min(2).max(50),
-    email: z.string().email(),
-    password: z.string().min(6),
-    phoneNumber: z.string().min(11).max(15),
-    dateOfBirth: z.coerce.date(),
-    gender: z.enum(["male", "female"]),
-    profilePicture: z.string().optional(),
-    address: addressSchema,
-    emergencyContact: emergencyContactSchema,
-    healthInfo: healthInfoSchema.optional(),
-    role: z.enum(["member", "admin", "director"]).default("member"),
-    isActive: z.boolean().default(false),
-    currentSubscription: currentSubscriptionSchema,
-    adminLocation: adminLocationSchema.optional().nullable(),
-    passwordResetToken: z.string().optional(),
-    passwordExpiredAt: z.coerce.date().optional(),
-  })
-  .refine(
-    (data) =>
-      data.role !== "admin" ||
-      (data.adminLocation !== undefined && data.adminLocation !== null),
-    { message: "Admin location is required for admin role" }
-  );
-
-export const groupMemberSchema = memberSchema.innerType().pick({
-  email: true,
-  regNumber: true,
-  password: true,
-  firstName: true,
-  lastName: true,
-  phoneNumber: true,
-  address: true,
-  emergencyContact: true,
-  healthInfo: true,
-  gender: true,
-  dateOfBirth: true,
-  profilePicture: true,
-});
-export const adminSchema = memberSchema.innerType().pick({
-  email: true,
-  regNumber: true,
-  password: true,
-  firstName: true,
-  lastName: true,
-  role: true,
-  phoneNumber: true,
-  adminLocation: true,
+export const memberSchema = z.object({
+  firstName: z.string().min(2).max(50),
+  lastName: z.string().min(2).max(50),
+  email: z.string().email(),
+  password: z.string().min(6),
+  phoneNumber: z.string().min(11).max(15),
+  dateOfBirth: z.coerce.date(),
+  gender: z.enum(["male", "female"]),
+  address: addressSchema,
+  emergencyContact: emergencyContactSchema,
+  healthInfo: healthInfoSchema.optional(),
+  currentSubscription: currentSubscriptionSchema,
 });
 
-export const loginSchema = memberSchema.innerType().pick({
-  email: true,
-  password: true,
-});
-export const emailAloneSchema = memberSchema.innerType().pick({
-  email: true,
-});
+// export const groupMemberSchema = memberSchema.pick({
+//   email: true,
+//   password: true,
+//   firstName: true,
+//   lastName: true,
+//   phoneNumber: true,
+//   address: true,
+//   emergencyContact: true,
+//   healthInfo: true,
+//   gender: true,
+//   dateOfBirth: true,
+// });
+// // export const adminSchema = memberSchema.pick({
+// //   email: true,
+// //   password: true,
+// //   firstName: true,
+// //   lastName: true,
+// //   role: true,
+// //   phoneNumber: true,
+// //   adminLocation: true,
+// // });
 
-export const memberUpdateSchema = memberSchema.innerType().partial();
+// export const loginSchema = memberSchema.pick({
+//   email: true,
+//   password: true,
+// });
+// export const emailAloneSchema = memberSchema.pick({
+//   email: true,
+// });
 
-export const passwordUpdateSchema = memberSchema
-  .innerType()
-  .pick({
-    password: true,
-  })
-  .extend({
-    newPassword: z.string().min(6),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+// export const memberUpdateSchema = memberSchema.partial();
 
-export const passwordresetSchema = z
-  .object({
-    newPassword: z.string().min(6),
-    confirmPassword: z.string(),
-  })
-  .refine((data) => data.newPassword === data.confirmPassword, {
-    message: "Passwords don't match",
-    path: ["confirmPassword"],
-  });
+// export const passwordUpdateSchema = memberSchema
 
-export const planSchema = z.object({
-  planId: z.string().min(2).max(50),
-  planType: z.enum(["individual", "couple", "family"]).default("family"),
-  name: z.string().min(2).max(50),
-  gymLocation: z.string().min(2).max(50),
-  gymBranch: z.string().min(2).max(50),
-  benefits: z.array(z.string()),
-  price: z.coerce.number().positive(),
-  duration: z.coerce.number().positive(),
-});
-export const updatePlanSchema = planSchema.omit({ planId: true }).partial();
+//   .pick({
+//     password: true,
+//   })
+//   .extend({
+//     newPassword: z.string().min(6),
+//     confirmPassword: z.string(),
+//   })
+//   .refine((data) => data.newPassword === data.confirmPassword, {
+//     message: "Passwords don't match",
+//     path: ["confirmPassword"],
+//   });
+
+// export const passwordresetSchema = z
+//   .object({
+//     newPassword: z.string().min(6),
+//     confirmPassword: z.string(),
+//   })
+//   .refine((data) => data.newPassword === data.confirmPassword, {
+//     message: "Passwords don't match",
+//     path: ["confirmPassword"],
+//   });
+
+// export const planSchema = z.object({
+//   planId: z.string().min(2).max(50),
+//   planType: z.enum(["individual", "couple", "family"]).default("family"),
+//   name: z.string().min(2).max(50),
+//   gymLocation: z.string().min(2).max(50),
+//   gymBranch: z.string().min(2).max(50),
+//   benefits: z.array(z.string()),
+//   price: z.coerce.number().positive(),
+//   duration: z.coerce.number().positive(),
+// });
+// export const updatePlanSchema = planSchema.omit({ planId: true }).partial();
