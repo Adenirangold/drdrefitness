@@ -3,8 +3,9 @@ import CustomInput from "@/components/CustomInput";
 import { memberSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { Form, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { Form } from "../ui/form";
 
 const defaultValues = {
   firstName: "",
@@ -44,7 +45,31 @@ const SignUpForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CustomInput control={form.control} name="firstName"></CustomInput>
+        <CustomInput
+          control={form.control}
+          name="firstName"
+          label="First Name"
+        ></CustomInput>
+        <CustomInput
+          control={form.control}
+          name="lastName"
+          label="Last Name"
+        ></CustomInput>
+        <CustomInput
+          control={form.control}
+          name="email"
+          label="Email"
+        ></CustomInput>
+        <CustomInput
+          control={form.control}
+          name="password"
+          label="Password"
+        ></CustomInput>
+        <CustomInput
+          control={form.control}
+          name="phoneNumber"
+          label="Phone Number"
+        ></CustomInput>
       </form>
     </Form>
   );

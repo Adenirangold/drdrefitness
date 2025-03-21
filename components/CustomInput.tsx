@@ -1,3 +1,4 @@
+// "use client";
 import React from "react";
 import {
   FormControl,
@@ -8,25 +9,25 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
-import { Control } from "react-hook-form";
+import { Control, FieldValues, Path } from "react-hook-form";
 
-interface CustomProps {
-  control: Control<any>;
-  name: string;
+interface CustomProps<T extends FieldValues> {
+  control: Control<T>;
+  name: Path<T>;
   label?: string;
   description?: string;
   placeholder?: string;
   disabled?: boolean;
 }
 
-const CustomInput = ({
+const CustomInput = <T extends FieldValues>({
   label,
   name,
   control,
   description,
   placeholder,
   disabled,
-}: CustomProps) => {
+}: CustomProps<T>) => {
   return (
     <FormField
       control={control}
