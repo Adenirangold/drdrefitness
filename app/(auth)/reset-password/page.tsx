@@ -1,12 +1,12 @@
-// {
-//     "newPassword":"123456789",
-//     "confirmPassword":"123456789"
-// }
-
+import RequestPasswordForm from "@/components/forms/ResetPasswordForm";
 import React from "react";
 
 const resetPasswordPage = () => {
-  return <div>resetPasswordPage</div>;
+  return (
+    <>
+      <RequestPasswordForm></RequestPasswordForm>
+    </>
+  );
 };
 
 export default resetPasswordPage;

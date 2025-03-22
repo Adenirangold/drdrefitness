@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
+import { Button } from "../ui/button";
 
 const defaultValues = {
   firstName: "",
@@ -86,12 +87,12 @@ const SignUpForm = () => {
           items={GENDER_RADIO_GROUP}
         ></CustomFormField>
         <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="Date-Of-Birth"
-          name="dateOfBirth"
+          fieldType={FormFieldType.DATE_PICKER}
           control={form.control}
-          inputType="date"
-        ></CustomFormField>
+          name="dateOfBirth"
+          label="Date-Of-Birth"
+          placeholder="mm/dd/yyyy"
+        />
         <CustomFormField
           fieldType={FormFieldType.INPUT}
           label="Street"
@@ -130,12 +131,8 @@ const SignUpForm = () => {
           control={form.control}
           items={EMERGENCY_SELECT_GROUP}
         ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.DATE_PICKER}
-          label=""
-          name={"currentSubscription.startDate"}
-          control={form.control}
-        ></CustomFormField>
+
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );

@@ -39,12 +39,27 @@ export const memberSchema = z.object({
   address: addressSchema,
   emergencyContact: emergencyContactSchema,
   healthInfo: healthInfoSchema.optional(),
+  registrationDate: z.coerce.date(),
   currentSubscription: currentSubscriptionSchema,
 });
 
 export const loginSchema = memberSchema.pick({
   email: true,
   password: true,
+});
+
+export const passwordresetSchema = z
+  .object({
+    newPassword: z.string().min(6),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
+export const emailAloneSchema = memberSchema.pick({
+  email: true,
 });
 
 // const adminLocationSchema = z.object({
@@ -73,10 +88,6 @@ export const loginSchema = memberSchema.pick({
 // //   adminLocation: true,
 // // });
 
-// export const emailAloneSchema = memberSchema.pick({
-//   email: true,
-// });
-
 // export const memberUpdateSchema = memberSchema.partial();
 
 // export const passwordUpdateSchema = memberSchema
@@ -85,16 +96,6 @@ export const loginSchema = memberSchema.pick({
 //     password: true,
 //   })
 //   .extend({
-//     newPassword: z.string().min(6),
-//     confirmPassword: z.string(),
-//   })
-//   .refine((data) => data.newPassword === data.confirmPassword, {
-//     message: "Passwords don't match",
-//     path: ["confirmPassword"],
-//   });
-
-// export const passwordresetSchema = z
-//   .object({
 //     newPassword: z.string().min(6),
 //     confirmPassword: z.string(),
 //   })

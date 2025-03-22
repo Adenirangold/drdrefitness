@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
+import { Button } from "../ui/button";
 
 const defaultValues = {
   email: "",
@@ -20,6 +21,7 @@ const LoginForm = () => {
 
   function onSubmit(values: z.infer<typeof loginSchema>) {
     console.log(values);
+    console.log("jj");
   }
   return (
     <Form {...form}>
@@ -38,6 +40,7 @@ const LoginForm = () => {
           inputType="password"
           control={form.control}
         ></CustomFormField>
+        <Button type="submit">Submit</Button>
       </form>
     </Form>
   );
