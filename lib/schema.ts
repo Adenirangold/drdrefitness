@@ -5,7 +5,6 @@ const addressSchema = z.object({
   street: z.string().min(1, "Street is required"),
   city: z.string().min(1, "City is required"),
   state: z.string().min(1, "State is required"),
-  country: z.string().default("Nigeria"),
 });
 
 const emergencyContactSchema = z.object({
@@ -29,11 +28,6 @@ export const currentSubscriptionSchema = z.object({
   startDate: z.coerce.date(),
 });
 
-const adminLocationSchema = z.object({
-  location: z.string().min(2).max(50),
-  branch: z.string().min(2).max(50),
-});
-
 export const memberSchema = z.object({
   firstName: z.string().min(2).max(50),
   lastName: z.string().min(2).max(50),
@@ -48,6 +42,15 @@ export const memberSchema = z.object({
   currentSubscription: currentSubscriptionSchema,
 });
 
+export const loginSchema = memberSchema.pick({
+  email: true,
+  password: true,
+});
+
+// const adminLocationSchema = z.object({
+//   location: z.string().min(2).max(50),
+//   branch: z.string().min(2).max(50),
+// });
 // export const groupMemberSchema = memberSchema.pick({
 //   email: true,
 //   password: true,
@@ -70,10 +73,6 @@ export const memberSchema = z.object({
 // //   adminLocation: true,
 // // });
 
-// export const loginSchema = memberSchema.pick({
-//   email: true,
-//   password: true,
-// });
 // export const emailAloneSchema = memberSchema.pick({
 //   email: true,
 // });

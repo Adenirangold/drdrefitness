@@ -1,10 +1,12 @@
-// "email":"adeniranbayogold900@gmail.com",
-// "password":"123456789"
-
+import LoginForm from "@/components/forms/LoginForm";
 import React from "react";
 
 const signInPage = () => {
-  return <div>signIn Page</div>;
+  return (
+    <div>
+      <LoginForm></LoginForm>
+    </div>
+  );
 };
 
 export default signInPage;

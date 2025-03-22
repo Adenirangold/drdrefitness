@@ -1,11 +1,12 @@
 "use client";
-import CustomInput from "@/components/CustomInput";
 import { memberSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
+import CustomFormField, { FormFieldType } from "../CustomFormField";
+import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
 
 const defaultValues = {
   firstName: "",
@@ -19,7 +20,6 @@ const defaultValues = {
     street: "",
     city: "",
     state: "",
-    country: "",
   },
   emergencyContact: {
     fullName: "",
@@ -45,31 +45,97 @@ const SignUpForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CustomInput
-          control={form.control}
-          name="firstName"
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
           label="First Name"
-        ></CustomInput>
-        <CustomInput
+          name="firstName"
           control={form.control}
-          name="lastName"
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
           label="Last Name"
-        ></CustomInput>
-        <CustomInput
+          name="lastName"
           control={form.control}
-          name="email"
-          label="Email"
-        ></CustomInput>
-        <CustomInput
-          control={form.control}
-          name="password"
-          label="Password"
-        ></CustomInput>
-        <CustomInput
-          control={form.control}
-          name="phoneNumber"
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
           label="Phone Number"
-        ></CustomInput>
+          name="phoneNumber"
+          inputType="number"
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Email"
+          name="email"
+          inputType="email"
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Password"
+          name="password"
+          inputType="password"
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.RADIO}
+          label="Gender"
+          name="gender"
+          control={form.control}
+          items={GENDER_RADIO_GROUP}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Date-Of-Birth"
+          name="dateOfBirth"
+          control={form.control}
+          inputType="date"
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Street"
+          name={"address.street"}
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="City"
+          name={"address.city"}
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="State"
+          name={"address.state"}
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Full Name"
+          name={"emergencyContact.fullName"}
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Phone Number"
+          name={"emergencyContact.phoneNumber"}
+          inputType="number"
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.SELECT}
+          label="Relationship"
+          name={"emergencyContact.relationship"}
+          control={form.control}
+          items={EMERGENCY_SELECT_GROUP}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.DATE_PICKER}
+          label=""
+          name={"currentSubscription.startDate"}
+          control={form.control}
+        ></CustomFormField>
       </form>
     </Form>
   );
