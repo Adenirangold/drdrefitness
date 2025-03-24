@@ -51,7 +51,7 @@ const SignUpForm = () => {
     try {
       const response = await axios.post(`${config.API_KEY}/auth/signup`, data);
 
-      console.log(response);
+      console.log(response.data.data);
     } catch (error: any) {
       console.error("Error:", error);
       console.error(error.response.data);
