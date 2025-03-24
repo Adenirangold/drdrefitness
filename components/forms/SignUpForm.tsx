@@ -5,9 +5,11 @@ import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
+import axios from "axios";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
 import { Button } from "../ui/button";
+import { config } from "@/lib/config";
 
 const defaultValues = {
   firstName: "",
@@ -27,11 +29,6 @@ const defaultValues = {
     phoneNumber: "",
     relationship: "",
   },
-  currentSubscription: {
-    plan: "",
-    startDate: new Date(),
-    endDate: new Date(),
-  },
 };
 
 const SignUpForm = () => {
@@ -40,8 +37,25 @@ const SignUpForm = () => {
     defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof memberSchema>) {
+  async function onSubmit(values: z.infer<typeof memberSchema>) {
     console.log(values);
+
+    const data = {
+      ...values,
+      currentSubscription: {
+        plan: "67d19044aa1d17317dc3c4f2",
+        startDate: new Date(),
+      },
+    };
+
+    try {
+      const response = await axios.post(`${config.API_KEY}/auth/signup`, data);
+
+      console.log(response);
+    } catch (error: any) {
+      console.error("Error:", error);
+      console.error(error.response.data);
+    }
   }
   return (
     <Form {...form}>

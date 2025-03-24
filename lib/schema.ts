@@ -8,9 +8,15 @@ const addressSchema = z.object({
 });
 
 const emergencyContactSchema = z.object({
-  fullName: z.string().min(2).max(50),
-  phoneNumber: z.string().min(11).max(15),
-  relationship: z.string().min(2).max(50),
+  fullName: z
+    .string()
+    .min(2, "Full Name is required")
+    .max(100, "Full Name should not be more than 100 letters"),
+  phoneNumber: z
+    .string()
+    .min(11, "Phone number should be at least 11 digits")
+    .max(15),
+  relationship: z.string().min(2, "Relationship is required"),
 });
 
 const healthInfoSchema = z.object({
@@ -20,27 +26,26 @@ const healthInfoSchema = z.object({
   allergies: z.array(z.string()).optional(),
 });
 
-export const currentSubscriptionSchema = z.object({
-  plan: z
-    .string()
-    .refine((val) => mongoose.Types.ObjectId.isValid(val), "Invalid ObjectId"),
-
-  startDate: z.coerce.date(),
-});
-
 export const memberSchema = z.object({
-  firstName: z.string().min(2).max(50),
-  lastName: z.string().min(2).max(50),
-  email: z.string().email(),
-  password: z.string().min(6),
-  phoneNumber: z.string().min(11).max(15),
+  firstName: z
+    .string()
+    .min(2, "First Name is required")
+    .max(50, "First Name should not be more than 50 letters"),
+  lastName: z
+    .string()
+    .min(2, "Last Name is required")
+    .max(50, "Last Name should not be more than 50 letters"),
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  phoneNumber: z
+    .string()
+    .min(11, "Phone number should be at least 11 digits")
+    .max(15),
   dateOfBirth: z.coerce.date(),
   gender: z.enum(["male", "female"]),
   address: addressSchema,
   emergencyContact: emergencyContactSchema,
   healthInfo: healthInfoSchema.optional(),
-  registrationDate: z.coerce.date(),
-  currentSubscription: currentSubscriptionSchema,
 });
 
 export const loginSchema = memberSchema.pick({
