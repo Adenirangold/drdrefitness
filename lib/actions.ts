@@ -69,6 +69,11 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
 
 export const getAuthenticatedUser = async (token: string) => {
   try {
+    if (!token) {
+      return {
+        error: "Authentication token is required",
+      };
+    }
     const response = await axios.get(`${config.API_KEY}/members`, {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -83,8 +88,11 @@ export const getAuthenticatedUser = async (token: string) => {
           "Error occured trying to authenticate member. Please try again later ",
       };
     }
-
-    console.log(response);
+    if (response && response.data) {
+      return {
+        data: response.data.data,
+      };
+    }
   } catch (error) {
     console.error("Error getting members:", error);
     return { error: "Error Authenticating Member. Please try again later" };
