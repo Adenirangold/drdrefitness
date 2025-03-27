@@ -10,6 +10,7 @@ import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
 import { Button } from "../ui/button";
 import { config } from "@/lib/config";
+import { signUpAction } from "@/lib/actions";
 
 const defaultValues = {
   firstName: "",
@@ -48,14 +49,9 @@ const SignUpForm = () => {
       },
     };
 
-    try {
-      const response = await axios.post(`${config.API_KEY}/auth/signup`, data);
+    const result = await signUpAction(data);
 
-      console.log(response.data.data);
-    } catch (error: any) {
-      console.error("Error:", error);
-      console.error(error.response.data);
-    }
+    window.location.href = result.data?.authorizationUrl;
   }
   return (
     <Form {...form}>
