@@ -3,6 +3,8 @@ import { cookies } from "next/headers";
 import { config } from "@/lib/config";
 import axios from "axios";
 
+// ////////////////////////AUTHENICATIONS//////////////////////////////
+
 export const signUpAction = async (data: UserData) => {
   try {
     const response = await axios.post(`${config.API_KEY}/auth/signup`, data);
@@ -90,6 +92,49 @@ export const loginAction = async (data: LoginData) => {
     };
   }
 };
+
+export const ResetPasswordAction = async (
+  data: ResetPasswordData,
+  resetToken: string
+) => {
+  try {
+    const response = await axios.post(
+      `${config.API_KEY}/auth/reset-password/${resetToken}`,
+      data
+    );
+
+    if (!response?.data?.data) {
+      console.error("No data returned in response");
+      return { error: "invalid Password or Email" };
+    }
+    return {
+      data: {
+        message: "success",
+      },
+    };
+  } catch (error) {
+    console.error("Error sign in:", error);
+    return {
+      error: "Unable to log you in now. please try again later",
+    };
+  }
+};
+
+export const forgorPasswordAction = async (data: EmailALoneData) => {
+  try {
+    const response = await axios.post(
+      `${config.API_KEY}/auth/forgot-password`,
+      data
+    );
+  } catch (error) {
+    console.error("Error sign in:", error);
+    return {
+      error: "Unable to log you in now. please try again later",
+    };
+  }
+};
+
+// ////////////////////////MEMBER ACTION//////////////////////////////
 
 export const getAuthenticatedUser = async (token: string) => {
   try {

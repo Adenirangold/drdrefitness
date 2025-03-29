@@ -26,3 +26,11 @@ interface LoginData {
   email: string;
   password: string;
 }
+
+interface ResetPasswordData {
+  newPassword: string;
+  confirmPassword: string;
+}
+interface EmailALoneData {
+  email: string;
+}
