@@ -34,7 +34,10 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
       };
     }
     const response = await axios.get(
-      `${config.API_KEY}/auth/signup/verify-payment/${reference}`
+      `${config.API_KEY}/auth/signup/verify-payment/${reference}`,
+      {
+        withCredentials: true,
+      }
     );
     if (!response || !response.data) {
       console.error("No data returned in response");
@@ -55,7 +58,7 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
 
     return {
       data: {
-        token,
+        message: "success",
       },
     };
   } catch (error) {
@@ -63,6 +66,27 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
     return {
       error:
         "Payment verification failed, An unexpected error occurred. Please try again late",
+    };
+  }
+};
+
+export const loginAction = async (data: LoginData) => {
+  try {
+    const response = await axios.post(`${config.API_KEY}/auth/login`, data);
+
+    if (!response?.data?.data) {
+      console.error("No data returned in response");
+      return { error: "invalid Password or Email" };
+    }
+    return {
+      data: {
+        message: "success",
+      },
+    };
+  } catch (error) {
+    console.error("Error sign in:", error);
+    return {
+      error: "Unable to log you in now. please try again later",
     };
   }
 };

@@ -21,3 +21,8 @@ interface UserData {
     startDate: Date;
   };
 }
+
+interface LoginData {
+  email: string;
+  password: string;
+}

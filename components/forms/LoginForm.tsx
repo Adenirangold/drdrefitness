@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
+import { loginAction } from "@/lib/actions";
 
 const defaultValues = {
   email: "",
@@ -19,9 +20,10 @@ const LoginForm = () => {
     defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof loginSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
     console.log(values);
-    console.log("jj");
+    const data = { ...values };
+    await loginAction(data);
   }
   return (
     <Form {...form}>
