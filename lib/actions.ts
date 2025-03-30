@@ -1,29 +1,38 @@
 "use server";
-import { cookies } from "next/headers";
+
 import { config } from "@/lib/config";
 import axios from "axios";
+import { fetchData } from "./utils";
+// axios.defaults.withCredentials = true;
 
 // ////////////////////////AUTHENICATIONS//////////////////////////////
 
 export const signUpAction = async (data: UserData) => {
   try {
-    const response = await axios.post(`${config.API_KEY}/auth/signup`, data);
+    const result = await fetchData("/auth/signup", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
 
-    if (!response?.data?.data) {
-      console.error("No data returned in response");
-      return { error: "Unable to sign in now. please try again later" };
+    if (result.error) {
+      return {
+        error: result.error,
+      };
     }
 
-    const { authorizationUrl } = response.data.data;
-    if (!authorizationUrl) {
-      console.error("Authorization url not available");
-      return { error: "Unable to sign in now. please try again later" };
-    }
-
-    return { data: { authorizationUrl } };
+    return {
+      data: {
+        message: result.data?.message || "success",
+        authorizationUrl: result.data.authorizationUrl,
+      },
+    };
   } catch (error: any) {
     console.error(error);
-    return { error: "Unable to sign in now. please try again later" };
+    return { error: "Something went wrong. Please try again later" };
   }
 };
 
@@ -32,23 +41,38 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
     if (!reference) {
       console.error("Reference does not exist");
       return {
-        error: "Error occured trying to verify payment. Try again later",
-      };
-    }
-    const response = await axios.get(
-      `${config.API_KEY}/auth/signup/verify-payment/${reference}`,
-      {
-        withCredentials: true,
-      }
-    );
-    if (!response || !response.data) {
-      console.error("No data returned in response");
-      return {
-        error: "Error occured trying to verify payment. Try again later",
+        error: "Error occurred trying to verify payment. Try again later",
       };
     }
 
-    const token = response.data.data.token;
+    const response = await fetch(
+      `${config.API_KEY}/auth/signup/verify-payment/${reference}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      console.error("No data returned in response");
+      return {
+        error: "Error occurred trying to verify payment. Try again later",
+      };
+    }
+
+    const responseData = await response.json();
+
+    if (!responseData || !responseData.data) {
+      console.error("No data returned in response");
+      return {
+        error: "Error occurred trying to verify payment. Try again later",
+      };
+    }
+
+    const token = responseData.data.token;
 
     if (!token) {
       console.error("No token received");
@@ -74,21 +98,29 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
 
 export const loginAction = async (data: LoginData) => {
   try {
-    const response = await axios.post(`${config.API_KEY}/auth/login`, data);
-
-    if (!response?.data?.data) {
-      console.error("No data returned in response");
-      return { error: "invalid Password or Email" };
+    const result = await fetchData("/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
     }
+
     return {
       data: {
-        message: "success",
+        message: result.data?.message || "success",
       },
     };
   } catch (error) {
     console.error("Error sign in:", error);
     return {
-      error: "Unable to log you in now. please try again later",
+      error: "Something went wrong. Please try again later",
     };
   }
 };
@@ -98,20 +130,21 @@ export const ResetPasswordAction = async (
   resetToken: string
 ) => {
   try {
-    const response = await axios.post(
+    const response = await fetch(
       `${config.API_KEY}/auth/reset-password/${resetToken}`,
-      data
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
     );
 
-    if (!response?.data?.data) {
+    if (!response.ok) {
       console.error("No data returned in response");
       return { error: "invalid Password or Email" };
     }
-    return {
-      data: {
-        message: "success",
-      },
-    };
   } catch (error) {
     console.error("Error sign in:", error);
     return {
@@ -122,10 +155,13 @@ export const ResetPasswordAction = async (
 
 export const forgorPasswordAction = async (data: EmailALoneData) => {
   try {
-    const response = await axios.post(
-      `${config.API_KEY}/auth/forgot-password`,
-      data
-    );
+    const response = await fetch(`${config.API_KEY}/auth/forgot-password`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
   } catch (error) {
     console.error("Error sign in:", error);
     return {
@@ -136,32 +172,40 @@ export const forgorPasswordAction = async (data: EmailALoneData) => {
 
 // ////////////////////////MEMBER ACTION//////////////////////////////
 
-export const getAuthenticatedUser = async (token: string) => {
+export const getAuthenticatedUser = async () => {
   try {
-    if (!token) {
-      return {
-        error: "Authentication token is required",
-      };
-    }
-    const response = await axios.get(`${config.API_KEY}/members`, {
+    const response = await fetch(`${config.API_KEY}/members`, {
+      method: "GET",
       headers: {
-        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
+      credentials: "include",
     });
 
-    if (!response || !response.data) {
+    if (!response.ok) {
       console.error("No data returned in response");
       return {
         error:
-          "Error occured trying to authenticate member. Please try again later ",
+          "Error occurred trying to authenticate member. Please try again later ",
       };
     }
-    if (response && response.data) {
+
+    const responseData = await response.json();
+
+    if (!responseData?.data) {
+      console.error("No data returned in response");
       return {
-        data: response.data.data,
+        error:
+          "Error occurred trying to authenticate member. Please try again later ",
       };
     }
+
+    return {
+      data: {
+        message: "success",
+        member: responseData.data,
+      },
+    };
   } catch (error) {
     console.error("Error getting members:", error);
     return { error: "Error Authenticating Member. Please try again later" };

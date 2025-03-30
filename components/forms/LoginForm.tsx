@@ -8,6 +8,7 @@ import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
 import { loginAction } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 const defaultValues = {
   email: "",
@@ -15,6 +16,7 @@ const defaultValues = {
 };
 
 const LoginForm = () => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues,
@@ -23,7 +25,11 @@ const LoginForm = () => {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     console.log(values);
     const data = { ...values };
-    await loginAction(data);
+    const result = await loginAction(data);
+
+    if (result.data) {
+      console.log("loging in");
+    }
   }
   return (
     <Form {...form}>
