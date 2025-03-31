@@ -10,12 +10,14 @@ export default async function PaymentSuccess({
   };
 }) {
   const { reference } = await searchParams;
+  console.log(reference);
 
   if (reference) {
-    const { data, error } = await verifyPaymentAfterSignupAction(reference);
+    const result = await verifyPaymentAfterSignupAction(reference);
 
-    if (error) {
-      console.log(error);
+    if (result.error) {
+      console.log(result.error);
+      return;
     }
 
     redirect("/member");

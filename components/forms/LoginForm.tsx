@@ -27,9 +27,11 @@ const LoginForm = () => {
     const data = { ...values };
     const result = await loginAction(data);
 
-    if (result.data) {
-      console.log("loging in");
+    if (result.error) {
+      console.log(result.error);
+      return;
     }
+    router.push("/member");
   }
   return (
     <Form {...form}>

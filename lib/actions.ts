@@ -26,12 +26,11 @@ export const signUpAction = async (data: UserData) => {
 
     return {
       data: {
-        message: result.data?.message || "success",
-        authorizationUrl: result.data.authorizationUrl,
+        message: result.data?.status || "success",
+        authorizationUrl: result.data.data.authorizationUrl,
       },
     };
   } catch (error: any) {
-    console.error(error);
     return { error: "Something went wrong. Please try again later" };
   }
 };
@@ -45,50 +44,28 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
       };
     }
 
-    const response = await fetch(
-      `${config.API_KEY}/auth/signup/verify-payment/${reference}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-      }
-    );
+    const result = await fetchData(`/auth/signup/verify-payment/${reference}`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
 
-    if (!response.ok) {
-      console.error("No data returned in response");
+      credentials: "include",
+    });
+
+    if (result.error) {
       return {
-        error: "Error occurred trying to verify payment. Try again later",
-      };
-    }
-
-    const responseData = await response.json();
-
-    if (!responseData || !responseData.data) {
-      console.error("No data returned in response");
-      return {
-        error: "Error occurred trying to verify payment. Try again later",
-      };
-    }
-
-    const token = responseData.data.token;
-
-    if (!token) {
-      console.error("No token received");
-      return {
-        error: "Authentication token missing. Please try again.",
-        status: 401,
+        error: result.error,
       };
     }
 
     return {
       data: {
-        message: "success",
+        message: result.data.status || "success",
+        token: result.data.data.token,
       },
     };
   } catch (error) {
-    console.error("Error verifying payment:", error);
     return {
       error:
         "Payment verification failed, An unexpected error occurred. Please try again late",
@@ -115,95 +92,83 @@ export const loginAction = async (data: LoginData) => {
     return {
       data: {
         message: result.data?.message || "success",
+        token: result.data.data.token,
       },
     };
   } catch (error) {
-    console.error("Error sign in:", error);
     return {
       error: "Something went wrong. Please try again later",
     };
   }
 };
 
-export const ResetPasswordAction = async (
-  data: ResetPasswordData,
-  resetToken: string
-) => {
-  try {
-    const response = await fetch(
-      `${config.API_KEY}/auth/reset-password/${resetToken}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
+// export const ResetPasswordAction = async (
+//   data: ResetPasswordData,
+//   resetToken: string
+// ) => {
+//   try {
+//     const response = await fetch(
+//       `${config.API_KEY}/auth/reset-password/${resetToken}`,
+//       {
+//         method: "POST",
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         body: JSON.stringify(data),
+//       }
+//     );
 
-    if (!response.ok) {
-      console.error("No data returned in response");
-      return { error: "invalid Password or Email" };
-    }
-  } catch (error) {
-    console.error("Error sign in:", error);
-    return {
-      error: "Unable to log you in now. please try again later",
-    };
-  }
-};
+//     if (!response.ok) {
+//       console.error("No data returned in response");
+//       return { error: "invalid Password or Email" };
+//     }
+//   } catch (error) {
+//     console.error("Error sign in:", error);
+//     return {
+//       error: "Unable to log you in now. please try again later",
+//     };
+//   }
+// };
 
-export const forgorPasswordAction = async (data: EmailALoneData) => {
-  try {
-    const response = await fetch(`${config.API_KEY}/auth/forgot-password`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
-  } catch (error) {
-    console.error("Error sign in:", error);
-    return {
-      error: "Unable to log you in now. please try again later",
-    };
-  }
-};
+// export const forgorPasswordAction = async (data: EmailALoneData) => {
+//   try {
+//     const response = await fetch(`${config.API_KEY}/auth/forgot-password`, {
+//       method: "POST",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       body: JSON.stringify(data),
+//     });
+//   } catch (error) {
+//     console.error("Error sign in:", error);
+//     return {
+//       error: "Unable to log you in now. please try again later",
+//     };
+//   }
+// };
 
 // ////////////////////////MEMBER ACTION//////////////////////////////
 
 export const getAuthenticatedUser = async () => {
   try {
-    const response = await fetch(`${config.API_KEY}/members`, {
+    const result = await fetchData("/auth/login", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
+
       credentials: "include",
     });
-
-    if (!response.ok) {
-      console.error("No data returned in response");
+    if (result.error) {
       return {
-        error:
-          "Error occurred trying to authenticate member. Please try again later ",
-      };
-    }
-
-    const responseData = await response.json();
-
-    if (!responseData?.data) {
-      console.error("No data returned in response");
-      return {
-        error:
-          "Error occurred trying to authenticate member. Please try again later ",
+        error: result.error,
       };
     }
 
     return {
       data: {
         message: "success",
-        member: responseData.data,
+        member: result.data.data,
       },
     };
   } catch (error) {

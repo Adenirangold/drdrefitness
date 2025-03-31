@@ -50,6 +50,10 @@ const SignUpForm = () => {
     };
 
     const result = await signUpAction(data);
+    if (result.error) {
+      console.log(result.error);
+      return;
+    }
 
     window.location.href = result.data?.authorizationUrl;
   }
