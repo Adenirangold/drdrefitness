@@ -31,6 +31,11 @@ interface ResetPasswordData {
   newPassword: string;
   confirmPassword: string;
 }
+interface UpdatePasswordData {
+  password: string;
+  newPassword: string;
+  confirmPassword: string;
+}
 interface EmailALoneData {
   email: string;
 }

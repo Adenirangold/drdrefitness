@@ -1,9 +1,10 @@
 "use server";
 
 import { config } from "@/lib/config";
-import axios from "axios";
+
 import { fetchData } from "./utils";
-// axios.defaults.withCredentials = true;
+import useAuthStore from "@/app/stores/authStore";
+import { cookies } from "next/headers";
 
 // ////////////////////////AUTHENICATIONS//////////////////////////////
 
@@ -68,7 +69,7 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
   } catch (error) {
     return {
       error:
-        "Payment verification failed, An unexpected error occurred. Please try again late",
+        "Payment verification failed, An unexpected error occurred. Please try again later",
     };
   }
 };
@@ -88,6 +89,13 @@ export const loginAction = async (data: LoginData) => {
         error: result.error,
       };
     }
+    const cookieStore = await cookies();
+    cookieStore.set("authToken", result.data.data.token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24,
+    });
 
     return {
       data: {
@@ -102,59 +110,79 @@ export const loginAction = async (data: LoginData) => {
   }
 };
 
-// export const ResetPasswordAction = async (
-//   data: ResetPasswordData,
-//   resetToken: string
-// ) => {
-//   try {
-//     const response = await fetch(
-//       `${config.API_KEY}/auth/reset-password/${resetToken}`,
-//       {
-//         method: "POST",
-//         headers: {
-//           "Content-Type": "application/json",
-//         },
-//         body: JSON.stringify(data),
-//       }
-//     );
+export const ResetPasswordAction = async (
+  data: ResetPasswordData,
+  resetToken: string
+) => {
+  try {
+    const result = await fetchData(`/auth/reset-password/${resetToken}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
 
-//     if (!response.ok) {
-//       console.error("No data returned in response");
-//       return { error: "invalid Password or Email" };
-//     }
-//   } catch (error) {
-//     console.error("Error sign in:", error);
-//     return {
-//       error: "Unable to log you in now. please try again later",
-//     };
-//   }
-// };
+    return {
+      data: {
+        message: result.data?.message || "success",
+      },
+    };
+  } catch (error) {
+    console.error("Error sign in:", error);
+    return {
+      error: "Something went wrong. Please try again later",
+    };
+  }
+};
 
-// export const forgorPasswordAction = async (data: EmailALoneData) => {
-//   try {
-//     const response = await fetch(`${config.API_KEY}/auth/forgot-password`, {
-//       method: "POST",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       body: JSON.stringify(data),
-//     });
-//   } catch (error) {
-//     console.error("Error sign in:", error);
-//     return {
-//       error: "Unable to log you in now. please try again later",
-//     };
-//   }
-// };
+export const forgotPasswordAction = async (data: EmailALoneData) => {
+  try {
+    const result = await fetchData("/auth/forgot-password", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+      credentials: "include",
+    });
+
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data?.message || "success",
+      },
+    };
+  } catch (error) {
+    return {
+      error: "Something went wrong. Please try again later",
+    };
+  }
+};
 
 // ////////////////////////MEMBER ACTION//////////////////////////////
 
 export const getAuthenticatedUser = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+
   try {
-    const result = await fetchData("/auth/login", {
+    const result = await fetchData("/members/", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
       },
 
       credentials: "include",
@@ -169,6 +197,37 @@ export const getAuthenticatedUser = async () => {
       data: {
         message: "success",
         member: result.data.data,
+      },
+    };
+  } catch (error) {
+    console.error("Error getting members:", error);
+    return { error: "Error Authenticating Member. Please try again later" };
+  }
+};
+export const memberUpdatePasswordAction = async (data: UpdatePasswordData) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+
+  try {
+    const result = await fetchData("/members/password", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
+      },
+      body: JSON.stringify(data),
+
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data?.message || "success",
       },
     };
   } catch (error) {

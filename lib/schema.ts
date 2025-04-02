@@ -67,6 +67,20 @@ export const emailAloneSchema = memberSchema.pick({
   email: true,
 });
 
+export const passwordUpdateSchema = memberSchema
+
+  .pick({
+    password: true,
+  })
+  .extend({
+    newPassword: z.string().min(6),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.newPassword === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
+
 // const adminLocationSchema = z.object({
 //   location: z.string().min(2).max(50),
 //   branch: z.string().min(2).max(50),
@@ -94,20 +108,6 @@ export const emailAloneSchema = memberSchema.pick({
 // // });
 
 // export const memberUpdateSchema = memberSchema.partial();
-
-// export const passwordUpdateSchema = memberSchema
-
-//   .pick({
-//     password: true,
-//   })
-//   .extend({
-//     newPassword: z.string().min(6),
-//     confirmPassword: z.string(),
-//   })
-//   .refine((data) => data.newPassword === data.confirmPassword, {
-//     message: "Passwords don't match",
-//     path: ["confirmPassword"],
-//   });
 
 // export const planSchema = z.object({
 //   planId: z.string().min(2).max(50),

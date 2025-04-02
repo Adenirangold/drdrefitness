@@ -11,7 +11,7 @@ export async function fetchData(endpoint: string, options: RequestInit = {}) {
 
   try {
     const response = await fetch(url, options);
-    console.log(response);
+    // console.log(response);
     if (!response.ok) {
       console.error(`Error: ${response.statusText}`);
 

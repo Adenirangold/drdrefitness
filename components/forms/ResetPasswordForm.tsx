@@ -7,20 +7,32 @@ import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
+import { ResetPasswordAction } from "@/lib/actions";
+import { useRouter } from "next/navigation";
 
 const defaultValues = {
   newPassword: "",
   confirmPassword: "",
 };
 
-const RequestPasswordForm = () => {
+const RequestPasswordForm = ({ resetToken }: { resetToken: string }) => {
+  const router = useRouter();
   const form = useForm<z.infer<typeof passwordresetSchema>>({
     resolver: zodResolver(passwordresetSchema),
     defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof passwordresetSchema>) {
+  async function onSubmit(values: z.infer<typeof passwordresetSchema>) {
     console.log(values);
+    const data = { ...values };
+    const result = await ResetPasswordAction(data, resetToken);
+
+    if (result.error) {
+      console.log(result.error);
+      return;
+    }
+
+    router.replace("/sign-in");
   }
   return (
     <Form {...form}>

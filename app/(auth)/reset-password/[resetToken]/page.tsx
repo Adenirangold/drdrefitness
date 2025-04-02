@@ -1,10 +1,16 @@
 import RequestPasswordForm from "@/components/forms/ResetPasswordForm";
 import React from "react";
 
-const resetPasswordPage = () => {
+const resetPasswordPage = async ({
+  params,
+}: {
+  params: { resetToken: string };
+}) => {
+  const { resetToken } = await params;
+
   return (
     <>
-      <RequestPasswordForm></RequestPasswordForm>
+      <RequestPasswordForm resetToken={resetToken}></RequestPasswordForm>
     </>
   );
 };

@@ -7,6 +7,7 @@ import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
+import { forgotPasswordAction } from "@/lib/actions";
 
 const defaultValues = {
   email: "",
@@ -18,8 +19,16 @@ const ForgotPasswordForm = () => {
     defaultValues,
   });
 
-  function onSubmit(values: z.infer<typeof emailAloneSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof emailAloneSchema>) {
+    const data = {
+      ...values,
+    };
+    const result = await forgotPasswordAction(data);
+    if (result.error) {
+      console.log(result.error);
+      return;
+    }
+    console.log(result.data?.message);
   }
   return (
     <Form {...form}>

@@ -1,5 +1,5 @@
 "use client";
-import { loginSchema } from "@/lib/schema";
+import { passwordUpdateSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -7,54 +7,53 @@ import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
-import { loginAction } from "@/lib/actions";
+import { memberUpdatePasswordAction, ResetPasswordAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/app/stores/authStore";
 
 const defaultValues = {
-  email: "",
-  password: "",
+  newPassword: "",
+  confirmPassword: "",
 };
 
-const LoginForm = () => {
+const UpdatePasswordForm = () => {
   const router = useRouter();
-  const setToken = useAuthStore((state) => state.setToken);
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof passwordUpdateSchema>>({
+    resolver: zodResolver(passwordUpdateSchema),
     defaultValues,
   });
 
-  async function onSubmit(values: z.infer<typeof loginSchema>) {
+  async function onSubmit(values: z.infer<typeof passwordUpdateSchema>) {
     console.log(values);
     const data = { ...values };
-    const result = await loginAction(data);
+    const result = await memberUpdatePasswordAction(data);
 
     if (result.error) {
       console.log(result.error);
       return;
     }
-
-    // if (result.data) {
-    //   setToken(result.data.token);
-    // }
-
-    // router.push(`/member?token=${encodeURIComponent(result?.data?.token)}`);
-    router.push(`/member`);
+    console.log(result.data?.message);
   }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <CustomFormField
           fieldType={FormFieldType.INPUT}
-          label="Email"
-          name="email"
-          inputType="email"
+          label="Password"
+          name="password"
+          inputType="password"
           control={form.control}
         ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.INPUT}
-          label="Password"
-          name="password"
+          label="New Password"
+          name="newPassword"
+          inputType="password"
+          control={form.control}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Confirm Password"
+          name="confirmPassword"
           inputType="password"
           control={form.control}
         ></CustomFormField>
@@ -64,4 +63,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default UpdatePasswordForm;

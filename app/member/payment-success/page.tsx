@@ -20,7 +20,7 @@ export default async function PaymentSuccess({
       return;
     }
 
-    redirect("/member");
+    redirect("/sign-in");
   }
 
   return <Spinner />;
