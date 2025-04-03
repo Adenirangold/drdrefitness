@@ -1,61 +1,87 @@
 "use client";
-import { memberSchema } from "@/lib/schema";
+import { memberSchema, memberUpdateSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
-import axios from "axios";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
 import { Button } from "../ui/button";
 import { config } from "@/lib/config";
-import { signUpAction } from "@/lib/actions";
+import { memberUpdateAction, signUpAction } from "@/lib/actions";
+import { getDirtyData } from "@/lib/utils";
 
-const defaultValues = {
-  firstName: "",
-  lastName: "",
-  email: "",
-  password: "",
-  phoneNumber: "",
-  dateOfBirth: new Date(),
-  gender: "male" as "male" | "female",
-  address: {
-    street: "",
-    city: "",
-    state: "",
-  },
-  emergencyContact: {
-    fullName: "",
-    phoneNumber: "",
-    relationship: "",
-  },
-};
+const SignUpForm = ({
+  edit,
+  data,
+}: {
+  edit: boolean;
+  data?: Partial<UserData>;
+}) => {
+  const defaultValues = {
+    firstName: edit ? data?.firstName : "",
+    lastName: edit ? data?.lastName : "",
+    email: edit ? data?.email : "",
+    password: edit ? "1234567" : "",
+    phoneNumber: edit ? data?.phoneNumber : "",
+    dateOfBirth: edit
+      ? data?.dateOfBirth
+        ? new Date(data.dateOfBirth)
+        : new Date()
+      : new Date(),
+    gender: edit ? data?.gender ?? "male" : "male",
+    address: {
+      street: edit ? data?.address?.street : "",
+      city: edit ? data?.address?.city : "",
+      state: edit ? data?.address?.state : "",
+    },
+    emergencyContact: {
+      fullName: edit ? data?.emergencyContact?.fullName : "",
+      phoneNumber: edit ? data?.emergencyContact?.phoneNumber : "",
+      relationship: edit ? data?.emergencyContact?.relationship : "",
+    },
+  };
 
-const SignUpForm = () => {
-  const form = useForm<z.infer<typeof memberSchema>>({
-    resolver: zodResolver(memberSchema),
+  const sigupSchema = edit ? memberUpdateSchema : memberSchema;
+  const form = useForm<z.infer<typeof sigupSchema>>({
+    resolver: zodResolver(sigupSchema),
     defaultValues,
   });
 
-  async function onSubmit(values: z.infer<typeof memberSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof sigupSchema>) {
+    // console.log(values);
 
-    const data = {
-      ...values,
-      currentSubscription: {
-        plan: "67d19044aa1d17317dc3c4f2",
-        startDate: new Date(),
-      },
-    };
+    if (edit) {
+      const dirtyFields = form.formState.dirtyFields;
+      const updateData = getDirtyData(values, dirtyFields);
 
-    const result = await signUpAction(data);
-    if (result.error) {
-      console.log(result.error);
-      return;
+      const data = {
+        ...updateData,
+      };
+      const result = await memberUpdateAction(data);
+      if (result.error) {
+        console.log(result.error);
+        return;
+      }
+      console.log(result.data?.message);
+    } else {
+      const data = {
+        ...values,
+        currentSubscription: {
+          plan: "67d19044aa1d17317dc3c4f2",
+          startDate: new Date(),
+        },
+      };
+
+      const result = await signUpAction(data);
+      if (result.error) {
+        console.log(result.error);
+        return;
+      }
+
+      window.location.href = result.data?.authorizationUrl;
     }
-
-    window.location.href = result.data?.authorizationUrl;
   }
   return (
     <Form {...form}>
@@ -84,15 +110,18 @@ const SignUpForm = () => {
           label="Email"
           name="email"
           inputType="email"
+          disabled={edit}
           control={form.control}
         ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="Password"
-          name="password"
-          inputType="password"
-          control={form.control}
-        ></CustomFormField>
+        {!edit && (
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            label="Password"
+            name="password"
+            inputType="password"
+            control={form.control}
+          ></CustomFormField>
+        )}
         <CustomFormField
           fieldType={FormFieldType.RADIO}
           label="Gender"

@@ -45,7 +45,7 @@ export const memberSchema = z.object({
   gender: z.enum(["male", "female"]),
   address: addressSchema,
   emergencyContact: emergencyContactSchema,
-  healthInfo: healthInfoSchema.optional(),
+  // healthInfo: healthInfoSchema.optional(),
 });
 
 export const loginSchema = memberSchema.pick({
@@ -67,12 +67,9 @@ export const emailAloneSchema = memberSchema.pick({
   email: true,
 });
 
-export const passwordUpdateSchema = memberSchema
-
-  .pick({
-    password: true,
-  })
-  .extend({
+export const passwordUpdateSchema = z
+  .object({
+    password: z.string(),
     newPassword: z.string().min(6),
     confirmPassword: z.string(),
   })
@@ -80,6 +77,8 @@ export const passwordUpdateSchema = memberSchema
     message: "Passwords don't match",
     path: ["confirmPassword"],
   });
+
+export const memberUpdateSchema = memberSchema.partial();
 
 // const adminLocationSchema = z.object({
 //   location: z.string().min(2).max(50),
@@ -106,8 +105,6 @@ export const passwordUpdateSchema = memberSchema
 // //   phoneNumber: true,
 // //   adminLocation: true,
 // // });
-
-// export const memberUpdateSchema = memberSchema.partial();
 
 // export const planSchema = z.object({
 //   planId: z.string().min(2).max(50),

@@ -3,7 +3,7 @@ import SignUpForm from "@/components/forms/SignUpForm";
 const signUpPage = () => {
   return (
     <>
-      <SignUpForm></SignUpForm>
+      <SignUpForm edit={false}></SignUpForm>
     </>
   );
 };

@@ -11,6 +11,7 @@ import { memberUpdatePasswordAction, ResetPasswordAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 
 const defaultValues = {
+  password: "",
   newPassword: "",
   confirmPassword: "",
 };
@@ -38,7 +39,7 @@ const UpdatePasswordForm = () => {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <CustomFormField
           fieldType={FormFieldType.INPUT}
-          label="Password"
+          label="Previous Password"
           name="password"
           inputType="password"
           control={form.control}

@@ -235,3 +235,36 @@ export const memberUpdatePasswordAction = async (data: UpdatePasswordData) => {
     return { error: "Error Authenticating Member. Please try again later" };
   }
 };
+
+export const memberUpdateAction = async (data: UserData) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  // console.log(data);
+
+  try {
+    const result = await fetchData("/members/", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
+      },
+      body: JSON.stringify(data),
+
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data?.message || "success",
+      },
+    };
+  } catch (error) {
+    console.error("Error getting members:", error);
+    return { error: "Error Authenticating Member. Please try again later" };
+  }
+};

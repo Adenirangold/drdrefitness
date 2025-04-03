@@ -1,22 +1,22 @@
 interface UserData {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  phoneNumber: string;
-  dateOfBirth: Date;
-  gender: "male" | "female";
-  address: {
-    street: string;
-    city: string;
-    state: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  password?: string;
+  phoneNumber?: string;
+  dateOfBirth?: Date;
+  gender?: "male" | "female";
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
   };
-  emergencyContact: {
+  emergencyContact?: {
     fullName: string;
     phoneNumber: string;
     relationship: string;
   };
-  currentSubscription: {
+  currentSubscription?: {
     plan: string;
     startDate: Date;
   };

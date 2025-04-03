@@ -52,3 +52,30 @@ export async function fetchData(endpoint: string, options: RequestInit = {}) {
     return { error: "Something went wrong!!. Please try again later." };
   }
 }
+
+export function getDirtyData<T>(
+  values: T,
+  dirtyFields: Record<string, any>
+): Partial<T> {
+  const result: Partial<T> = {};
+
+  for (const key in dirtyFields) {
+    if (Object.prototype.hasOwnProperty.call(dirtyFields, key)) {
+      if (typeof dirtyFields[key] === "object" && dirtyFields[key] !== null) {
+        // Handle nested objects
+        const nestedDirty = getDirtyData(
+          values[key as keyof T],
+          dirtyFields[key]
+        );
+        if (Object.keys(nestedDirty).length > 0) {
+          result[key as keyof T] = nestedDirty as any;
+        }
+      } else if (dirtyFields[key]) {
+        // Handle primitive fields
+        result[key as keyof T] = values[key as keyof T];
+      }
+    }
+  }
+
+  return result;
+}
