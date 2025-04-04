@@ -200,8 +200,8 @@ export const getAuthenticatedUser = async () => {
       },
     };
   } catch (error) {
-    console.error("Error getting members:", error);
-    return { error: "Error Authenticating Member. Please try again later" };
+    console.error("Error:", error);
+    return { error: "Something went wrong. Please try again later" };
   }
 };
 export const memberUpdatePasswordAction = async (data: UpdatePasswordData) => {
@@ -231,8 +231,8 @@ export const memberUpdatePasswordAction = async (data: UpdatePasswordData) => {
       },
     };
   } catch (error) {
-    console.error("Error getting members:", error);
-    return { error: "Error Authenticating Member. Please try again later" };
+    console.error("Error:", error);
+    return { error: "Something went wrong. Please try again later" };
   }
 };
 
@@ -264,7 +264,35 @@ export const memberUpdateAction = async (data: UserData) => {
       },
     };
   } catch (error) {
-    console.error("Error getting members:", error);
-    return { error: "Error Authenticating Member. Please try again later" };
+    console.error("Error:", error);
+    return { error: "Something went wrong. Please try again later" };
+  }
+};
+// /////////////////////////////////////////PLAN/////////////
+
+export const getAllPlanAction = async (data: UserData) => {
+  try {
+    const result = await fetchData("/plans/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data?.message || "success",
+        plan: result.data.plan,
+      },
+    };
+  } catch (error) {
+    console.error("Error:", error);
+    return { error: "Something went wrong. Please try again later" };
   }
 };
