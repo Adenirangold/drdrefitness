@@ -268,9 +268,9 @@ export const memberUpdateAction = async (data: UserData) => {
     return { error: "Something went wrong. Please try again later" };
   }
 };
-// /////////////////////////////////////////PLAN/////////////
+///////////////////////////////////////////PLAN//////////////////////////////////////
 
-export const getAllPlanAction = async (data: UserData) => {
+export const getAllPlanAction = async () => {
   try {
     const result = await fetchData("/plans/", {
       method: "GET",
@@ -288,7 +288,7 @@ export const getAllPlanAction = async (data: UserData) => {
     return {
       data: {
         message: result.data?.message || "success",
-        plan: result.data.plan,
+        plan: result.data.data,
       },
     };
   } catch (error) {

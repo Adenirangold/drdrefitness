@@ -39,3 +39,14 @@ interface UpdatePasswordData {
 interface EmailALoneData {
   email: string;
 }
+interface PlanData {
+  id?: string;
+  planId?: string;
+  name: string;
+  planType: string;
+  gymLocation: string;
+  gymBranch: string;
+  price: number;
+  benefit?: [string];
+  duration: number;
+}
