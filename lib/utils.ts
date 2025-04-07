@@ -79,3 +79,29 @@ export function getDirtyData<T>(
 
   return result;
 }
+export function getBranchOptions(data: PlanData[]) {
+  return [...new Set(data.map((item) => item.gymBranch))].map((branch) => ({
+    value: branch,
+    label: branch.charAt(0).toUpperCase() + branch.slice(1),
+  }));
+}
+
+export function getPlanNameOptions(data: PlanData[]) {
+  return [...new Set(data.map((item) => item.name))].map((name) => ({
+    value: name,
+    label: name.charAt(0).toUpperCase() + name.slice(1),
+  }));
+}
+
+export function getPlanTypeOptions(data: PlanData[]) {
+  return [...new Set(data.map((item) => item.planType))].map((type) => ({
+    value: type,
+    label: type.charAt(0).toUpperCase() + type.slice(1),
+  }));
+}
+export function getLocationOptions(data: PlanData[]) {
+  return [...new Set(data.map((item) => item.gymLocation))].map((type) => ({
+    value: type,
+    label: type.charAt(0).toUpperCase() + type.slice(1),
+  }));
+}

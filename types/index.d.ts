@@ -40,7 +40,7 @@ interface EmailALoneData {
   email: string;
 }
 interface PlanData {
-  id?: string;
+  _id?: string;
   planId?: string;
   name: string;
   planType: string;
@@ -49,4 +49,9 @@ interface PlanData {
   price: number;
   benefit?: [string];
   duration: number;
+}
+
+interface SelectOption {
+  value: string;
+  label: string;
 }
