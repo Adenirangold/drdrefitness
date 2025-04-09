@@ -13,7 +13,7 @@ const defaultValues = {
   email: "",
 };
 
-const ForgotPasswordForm = () => {
+const EmailOnlyForm = () => {
   const form = useForm<z.infer<typeof emailAloneSchema>>({
     resolver: zodResolver(emailAloneSchema),
     defaultValues,
@@ -46,4 +46,4 @@ const ForgotPasswordForm = () => {
   );
 };
 
-export default ForgotPasswordForm;
+export default EmailOnlyForm;

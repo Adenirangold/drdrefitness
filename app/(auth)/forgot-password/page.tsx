@@ -1,12 +1,12 @@
 // "email":"adeniranbayogold@gmail.com"
 
-import ForgotPasswordForm from "@/components/forms/ForgotPassword";
+import EmailOnlyForm from "@/components/forms/EmailOnlyForm";
 import React from "react";
 
 const forgetPasswordPage = () => {
   return (
     <div>
-      <ForgotPasswordForm></ForgotPasswordForm>
+      <EmailOnlyForm></EmailOnlyForm>
     </div>
   );
 };
