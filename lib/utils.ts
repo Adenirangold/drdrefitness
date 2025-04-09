@@ -62,7 +62,6 @@ export function getDirtyData<T>(
   for (const key in dirtyFields) {
     if (Object.prototype.hasOwnProperty.call(dirtyFields, key)) {
       if (typeof dirtyFields[key] === "object" && dirtyFields[key] !== null) {
-        // Handle nested objects
         const nestedDirty = getDirtyData(
           values[key as keyof T],
           dirtyFields[key]
@@ -71,7 +70,6 @@ export function getDirtyData<T>(
           result[key as keyof T] = nestedDirty as any;
         }
       } else if (dirtyFields[key]) {
-        // Handle primitive fields
         result[key as keyof T] = values[key as keyof T];
       }
     }
@@ -79,8 +77,17 @@ export function getDirtyData<T>(
 
   return result;
 }
-export function getBranchOptions(data: PlanData[]) {
-  return [...new Set(data.map((item) => item.gymBranch))].map((branch) => ({
+
+export function getBranchOptions(data: PlanData[], selectedLocation: string) {
+  const filteredPlans = data?.filter(
+    (item) => item.gymLocation === selectedLocation
+  );
+
+  const uniqueBranches = [
+    ...new Set(filteredPlans.map((item) => item.gymBranch)),
+  ];
+
+  return uniqueBranches.map((branch) => ({
     value: branch,
     label: branch.charAt(0).toUpperCase() + branch.slice(1),
   }));

@@ -43,12 +43,19 @@ interface PlanData {
   _id?: string;
   planId?: string;
   name: string;
-  planType: string;
+  planType: "individual" | "couple" | "family";
   gymLocation: string;
   gymBranch: string;
-  price: number;
+  price?: number;
   benefit?: [string];
-  duration: number;
+  duration?: number;
+}
+
+interface ActivationData {
+  name?: string;
+  planType?: string;
+  gymLocation?: string;
+  gymBranch?: string;
 }
 
 interface SelectOption {

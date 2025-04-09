@@ -171,7 +171,7 @@ export const forgotPasswordAction = async (data: EmailALoneData) => {
   }
 };
 
-// ////////////////////////MEMBER ACTION//////////////////////////////
+// ///////////////////////AUTHETICATION//////////////////////////////
 
 export const getAuthenticatedUser = async () => {
   const cookieStore = await cookies();
@@ -204,6 +204,8 @@ export const getAuthenticatedUser = async () => {
     return { error: "Something went wrong. Please try again later" };
   }
 };
+
+// ////////////////////////MEMBER ACTION//////////////////////////////
 export const memberUpdatePasswordAction = async (data: UpdatePasswordData) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value || null;
@@ -266,6 +268,89 @@ export const memberUpdateAction = async (data: UserData) => {
   } catch (error) {
     console.error("Error:", error);
     return { error: "Something went wrong. Please try again later" };
+  }
+};
+
+export const memberReactivateSubscriptionAction = async (
+  data: ActivationData
+) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+
+  try {
+    const result = await fetchData("/subscription/", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
+      },
+      body: JSON.stringify(data),
+
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data?.message || "success",
+        authorizationUrl: result.data.data.authorizationUrl,
+      },
+    };
+  } catch (error) {
+    console.error("Error:", error);
+    return { error: "Something went wrong. Please try again later" };
+  }
+};
+export const verifyPaymentAfterReactivationAction = async (
+  reference: string
+) => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("authToken")?.value || null;
+    if (!reference) {
+      console.error("Reference does not exist");
+      return {
+        error: "Error occurred trying to verify payment. Try again later",
+      };
+    }
+
+    const result = await fetchData(
+      `/subscription/verify-payment/${reference}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `authToken=${token}`,
+        },
+
+        credentials: "include",
+      }
+    );
+    // console.log(result);
+
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    console.log(result);
+
+    return {
+      data: {
+        message: result.data.status || "success",
+      },
+    };
+  } catch (error) {
+    return {
+      // error:
+      //   "Payment verification failed, An unexpected error occurred. Please try again later",
+      error: "nalie",
+    };
   }
 };
 ///////////////////////////////////////////PLAN//////////////////////////////////////

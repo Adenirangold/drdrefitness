@@ -79,6 +79,8 @@ const SignUpForm = ({
         console.log(result.error);
         return;
       }
+      const paymentType = "signup";
+      document.cookie = `paymentType=${paymentType}; path=/; max-age=3600`;
 
       window.location.href = result.data?.authorizationUrl;
     }

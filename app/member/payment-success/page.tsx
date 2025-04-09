@@ -1,6 +1,10 @@
 import { redirect } from "next/navigation";
-import { verifyPaymentAfterSignupAction } from "@/lib/actions";
+import {
+  verifyPaymentAfterReactivationAction,
+  verifyPaymentAfterSignupAction,
+} from "@/lib/actions";
 import Spinner from "@/components/Spinner";
+import { cookies } from "next/headers";
 
 export default async function PaymentSuccess({
   searchParams,
@@ -10,17 +14,33 @@ export default async function PaymentSuccess({
   };
 }) {
   const { reference } = await searchParams;
-  console.log(reference);
+  const cookieStore = await cookies();
+  const paymentType = cookieStore.get("paymentType")?.value || "signup";
+  console.log(paymentType);
 
   if (reference) {
-    const result = await verifyPaymentAfterSignupAction(reference);
+    let redirectUrl = "/sign-in";
+    let result;
+    switch (paymentType) {
+      case "signup":
+        result = await verifyPaymentAfterSignupAction(reference);
+        redirectUrl = "/sign-in";
+        break;
+      case "reactivate":
+        result = await verifyPaymentAfterReactivationAction(reference);
+        redirectUrl = "/member";
+        break;
 
-    if (result.error) {
-      console.log(result.error);
+      default:
+        console.log("Unknown payment type");
+    }
+
+    if (result?.error) {
+      console.log(result?.error);
       return;
     }
 
-    redirect("/sign-in");
+    redirect(redirectUrl);
   }
 
   return <Spinner />;
