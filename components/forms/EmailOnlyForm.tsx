@@ -7,13 +7,14 @@ import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
-import { forgotPasswordAction } from "@/lib/actions";
+import { forgotPasswordAction, MemberInviteAction } from "@/lib/actions";
 
-const defaultValues = {
-  email: "",
-};
+type ActionType = "forgot-password" | "invite-member";
 
-const EmailOnlyForm = () => {
+const EmailOnlyForm = ({ type }: { type: ActionType }) => {
+  const defaultValues = {
+    email: "",
+  };
   const form = useForm<z.infer<typeof emailAloneSchema>>({
     resolver: zodResolver(emailAloneSchema),
     defaultValues,
@@ -23,12 +24,19 @@ const EmailOnlyForm = () => {
     const data = {
       ...values,
     };
-    const result = await forgotPasswordAction(data);
-    if (result.error) {
-      console.log(result.error);
+    let result;
+
+    if (type === "forgot-password") {
+      result = await forgotPasswordAction(data);
+    }
+    if (type === "invite-member") {
+      result = await MemberInviteAction(data);
+    }
+    if (result?.error) {
+      console.log(result?.error);
       return;
     }
-    console.log(result.data?.message);
+    console.log(result?.data?.message);
   }
   return (
     <Form {...form}>

@@ -6,7 +6,7 @@ import React from "react";
 const forgetPasswordPage = () => {
   return (
     <div>
-      <EmailOnlyForm></EmailOnlyForm>
+      <EmailOnlyForm type="forgot-password"></EmailOnlyForm>
     </div>
   );
 };

@@ -278,7 +278,7 @@ export const memberReactivateSubscriptionAction = async (
   const token = cookieStore.get("authToken")?.value || null;
 
   try {
-    const result = await fetchData("/subscription/", {
+    const result = await fetchData("/members/subscription/", {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -319,7 +319,7 @@ export const verifyPaymentAfterReactivationAction = async (
     }
 
     const result = await fetchData(
-      `/subscription/verify-payment/${reference}`,
+      `/members/subscription/verify-payment/${reference}`,
       {
         method: "GET",
         headers: {
@@ -330,15 +330,12 @@ export const verifyPaymentAfterReactivationAction = async (
         credentials: "include",
       }
     );
-    // console.log(result);
 
     if (result.error) {
       return {
         error: result.error,
       };
     }
-
-    console.log(result);
 
     return {
       data: {
@@ -347,12 +344,47 @@ export const verifyPaymentAfterReactivationAction = async (
     };
   } catch (error) {
     return {
-      // error:
-      //   "Payment verification failed, An unexpected error occurred. Please try again later",
-      error: "nalie",
+      error:
+        "Payment verification failed, An unexpected error occurred. Please try again later",
     };
   }
 };
+
+export const MemberInviteAction = async (data: EmailALoneData) => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("authToken")?.value || null;
+
+    const result = await fetchData(`/members/group-subscription`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
+      },
+      body: JSON.stringify(data),
+
+      credentials: "include",
+    });
+
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data.status || "success",
+      },
+    };
+  } catch (error) {
+    return {
+      error:
+        "Payment verification failed, An unexpected error occurred. Please try again later",
+    };
+  }
+};
+
 ///////////////////////////////////////////PLAN//////////////////////////////////////
 
 export const getAllPlanAction = async () => {
