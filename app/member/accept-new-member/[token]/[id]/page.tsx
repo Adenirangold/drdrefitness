@@ -1,5 +1,6 @@
-import EmailOnlyForm from "@/components/forms/EmailOnlyForm";
+import SignUpForm from "@/components/forms/SignUpForm";
 import React from "react";
+
 interface AcceptNewMemberPageProps {
   params: {
     token: string;
@@ -13,9 +14,10 @@ const page = async ({ params }: AcceptNewMemberPageProps) => {
     token,
     id,
   };
+
   return (
     <div>
-      <EmailOnlyForm formParams={formParams} type="group"></EmailOnlyForm>
+      <SignUpForm formParams={formParams} type="group"></SignUpForm>
     </div>
   );
 };

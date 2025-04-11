@@ -12,7 +12,7 @@ const page = async () => {
   }
   return (
     <div>
-      <SignUpForm edit data={result.data?.member}></SignUpForm>
+      <SignUpForm type="edit" data={result.data?.member}></SignUpForm>
     </div>
   );
 };

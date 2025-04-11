@@ -385,6 +385,43 @@ export const MemberInviteAction = async (data: EmailALoneData) => {
   }
 };
 
+export const MemberAcceptInviteAction = async (
+  data: UserData,
+  token: string,
+  id: string
+) => {
+  try {
+    const result = await fetchData(
+      `/members/group-subscription/${token}/${id}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+
+        credentials: "include",
+      }
+    );
+
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data.status || "success",
+      },
+    };
+  } catch (error) {
+    return {
+      error: "An unexpected error occurred. Please try again later",
+    };
+  }
+};
+
 ///////////////////////////////////////////PLAN//////////////////////////////////////
 
 export const getAllPlanAction = async () => {

@@ -7,11 +7,22 @@ import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
-import { forgotPasswordAction, MemberInviteAction } from "@/lib/actions";
+import {
+  forgotPasswordAction,
+  MemberAcceptInviteAction,
+  MemberInviteAction,
+} from "@/lib/actions";
 
-type ActionType = "forgot-password" | "invite-member";
+type ActionType = "forgot-password" | "invite-member" | "group";
 
-const EmailOnlyForm = ({ type }: { type: ActionType }) => {
+const EmailOnlyForm = ({
+  type,
+  formParams,
+}: {
+  type: ActionType;
+  formParams: any;
+}) => {
+  const { id, token } = formParams ?? {};
   const defaultValues = {
     email: "",
   };
@@ -31,6 +42,9 @@ const EmailOnlyForm = ({ type }: { type: ActionType }) => {
     }
     if (type === "invite-member") {
       result = await MemberInviteAction(data);
+    }
+    if (type === "group") {
+      result = await MemberAcceptInviteAction(data, token, id);
     }
     if (result?.error) {
       console.log(result?.error);

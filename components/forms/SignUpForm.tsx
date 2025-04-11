@@ -9,16 +9,25 @@ import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
 import { Button } from "../ui/button";
 import { config } from "@/lib/config";
-import { memberUpdateAction, signUpAction } from "@/lib/actions";
+import {
+  MemberAcceptInviteAction,
+  memberUpdateAction,
+  signUpAction,
+} from "@/lib/actions";
 import { getDirtyData } from "@/lib/utils";
+type ActionType = "edit" | "sign-up" | "group";
 
 const SignUpForm = ({
-  edit,
+  type,
   data,
+  formParams,
 }: {
-  edit: boolean;
+  type: ActionType;
+  formParams?: any;
   data?: Partial<UserData>;
 }) => {
+  const { id, token } = formParams ?? {};
+  const edit = type === "edit";
   const defaultValues = {
     firstName: edit ? data?.firstName : "",
     lastName: edit ? data?.lastName : "",
@@ -50,7 +59,7 @@ const SignUpForm = ({
   });
 
   async function onSubmit(values: z.infer<typeof sigupSchema>) {
-    // console.log(values);
+    console.log(values);
 
     if (edit) {
       const dirtyFields = form.formState.dirtyFields;
@@ -60,6 +69,16 @@ const SignUpForm = ({
         ...updateData,
       };
       const result = await memberUpdateAction(data);
+      if (result.error) {
+        console.log(result.error);
+        return;
+      }
+      console.log(result.data?.message);
+    } else if (type === "group") {
+      const data = {
+        ...values,
+      };
+      const result = await MemberAcceptInviteAction(data, token, id);
       if (result.error) {
         console.log(result.error);
         return;
