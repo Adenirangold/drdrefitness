@@ -421,6 +421,38 @@ export const MemberAcceptInviteAction = async (
     };
   }
 };
+export const deleteDepedantMemberAction = async (id: string) => {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("authToken")?.value || null;
+
+    const result = await fetchData(`/members/group-subscription/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
+      },
+
+      credentials: "include",
+    });
+
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data.status || "success",
+      },
+    };
+  } catch (error) {
+    return {
+      error: "An unexpected error occurred. Please try again later",
+    };
+  }
+};
 
 ///////////////////////////////////////////PLAN//////////////////////////////////////
 

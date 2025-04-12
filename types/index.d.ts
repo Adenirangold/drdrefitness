@@ -62,3 +62,6 @@ interface SelectOption {
   value: string;
   label: string;
 }
+interface idAloneData {
+  id: string;
+}
