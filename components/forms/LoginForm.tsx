@@ -18,7 +18,7 @@ const defaultValues = {
 
 const LoginForm = () => {
   const router = useRouter();
-  const setToken = useAuthStore((state) => state.setToken);
+
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues,
@@ -26,20 +26,17 @@ const LoginForm = () => {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     console.log(values);
-    const data = { ...values };
-    const result = await loginAction(data);
 
-    if (result.error) {
+    const data = { ...values };
+
+    const result = await loginAction(data);
+    if (result?.error) {
       console.log(result.error);
       return;
     }
+    const role = result.data?.role;
 
-    // if (result.data) {
-    //   setToken(result.data.token);
-    // }
-
-    // router.push(`/member?token=${encodeURIComponent(result?.data?.token)}`);
-    router.push(`/member`);
+    router.push(`/${role}/dashboard`);
   }
   return (
     <Form {...form}>

@@ -16,6 +16,7 @@ import {
   getPlanTypeOptions,
 } from "@/lib/utils";
 import { memberReactivateSubscriptionAction } from "@/lib/actions";
+import { usePlans } from "@/lib/hooks/usePlan";
 
 const defaultValues = {
   planType: "individual" as "individual" | "couple" | "family",
@@ -24,7 +25,11 @@ const defaultValues = {
   name: "",
 };
 
-const ReactivateClientsForm = ({ data }: { data: PlanData[] }) => {
+const ReactivateClientsForm = () => {
+  const { data, isLoading, isError, error } = usePlans();
+  const planData = data?.data || [];
+  // console.log(data);
+
   const router = useRouter();
 
   const form = useForm<z.infer<typeof resubscribePlanSchema>>({
@@ -33,10 +38,10 @@ const ReactivateClientsForm = ({ data }: { data: PlanData[] }) => {
   });
   const selectedLocation = form.watch("gymLocation") || "ilorin";
 
-  const branchOption = getBranchOptions(data, selectedLocation);
-  const nameOption = getPlanNameOptions(data);
-  const planTypeOption = getPlanTypeOptions(data);
-  const locationOption = getLocationOptions(data);
+  const branchOption = getBranchOptions(planData, selectedLocation);
+  const nameOption = getPlanNameOptions(planData);
+  const planTypeOption = getPlanTypeOptions(planData);
+  const locationOption = getLocationOptions(planData);
 
   async function onSubmit(values: z.infer<typeof resubscribePlanSchema>) {
     console.log(values);

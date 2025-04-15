@@ -26,6 +26,17 @@ const healthInfoSchema = z.object({
   allergies: z.array(z.string()).optional(),
 });
 
+export const planSchema = z.object({
+  planId: z.string().min(2).max(50).optional(),
+  planType: z.enum(["individual", "couple", "family"]).default("individual"),
+  name: z.string().min(2).max(50),
+  gymLocation: z.string().min(2).max(50),
+  gymBranch: z.string().min(2).max(50),
+  benefits: z.array(z.string()).optional(),
+  price: z.coerce.number().positive().optional(),
+  duration: z.coerce.number().positive().optional(),
+});
+
 export const memberSchema = z.object({
   firstName: z
     .string()
@@ -46,6 +57,7 @@ export const memberSchema = z.object({
   address: addressSchema,
   emergencyContact: emergencyContactSchema,
   // healthInfo: healthInfoSchema.optional(),
+  subscriptionPlan: planSchema.optional(),
 });
 
 export const loginSchema = memberSchema.pick({
@@ -79,17 +91,6 @@ export const passwordUpdateSchema = z
   });
 
 export const memberUpdateSchema = memberSchema.partial();
-
-export const planSchema = z.object({
-  planId: z.string().min(2).max(50),
-  planType: z.enum(["individual", "couple", "family"]).default("individual"),
-  name: z.string().min(2).max(50),
-  gymLocation: z.string().min(2).max(50),
-  gymBranch: z.string().min(2).max(50),
-  benefits: z.array(z.string()),
-  price: z.coerce.number().positive(),
-  duration: z.coerce.number().positive(),
-});
 
 export const resubscribePlanSchema = planSchema.partial();
 

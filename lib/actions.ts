@@ -101,6 +101,7 @@ export const loginAction = async (data: LoginData) => {
       data: {
         message: result.data?.message || "success",
         token: result.data.data.token,
+        role: result.data.data.role,
       },
     };
   } catch (error) {
@@ -456,29 +457,56 @@ export const deleteDepedantMemberAction = async (id: string) => {
 
 ///////////////////////////////////////////PLAN//////////////////////////////////////
 
-export const getAllPlanAction = async () => {
-  try {
-    const result = await fetchData("/plans/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-    });
-    if (result.error) {
-      return {
-        error: result.error,
-      };
-    }
+// export const getAllPlanAction = async () => {
+//   try {
+//     const result = await fetchData("/plans/", {
+//       method: "GET",
+//       headers: {
+//         "Content-Type": "application/json",
+//       },
+//       credentials: "include",
+//       cache: 'no-store'
+//     });
+//     if (result.error) {
+//       return {
+//         error: result.error,
+//       };
+//     }
 
-    return {
-      data: {
-        message: result.data?.message || "success",
-        plan: result.data.data,
-      },
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return { error: "Something went wrong. Please try again later" };
+//     return {
+//       data: {
+//         message: result.data?.message || "success",
+//         plan: result.data.data,
+//       },
+//     };
+//   } catch (error) {
+//     console.error("Error:", error);
+//     return { error: "Something went wrong. Please try again later" };
+//   }
+
+// };
+
+export const getAllPlanAction = async () => {
+  const response = await fetch(`${config.API_KEY}/plans/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
   }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
 };

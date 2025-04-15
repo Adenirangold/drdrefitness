@@ -14,8 +14,15 @@ import {
   memberUpdateAction,
   signUpAction,
 } from "@/lib/actions";
-import { getDirtyData } from "@/lib/utils";
-type ActionType = "edit" | "sign-up" | "group";
+import {
+  getBranchOptions,
+  getDirtyData,
+  getLocationOptions,
+  getPlanNameOptions,
+  getPlanTypeOptions,
+} from "@/lib/utils";
+import { usePlans } from "@/lib/hooks/usePlan";
+type ActionType = "edit" | "sign-up" | "group" | "admin";
 
 const SignUpForm = ({
   type,
@@ -26,8 +33,12 @@ const SignUpForm = ({
   formParams?: any;
   data?: Partial<UserData>;
 }) => {
+  const { data: usePlanData, isLoading, isError, error } = usePlans();
+  const planData = usePlanData?.data || [];
   const { id, token } = formParams ?? {};
+  const selectNeeded = type === "admin" || type === "sign-up";
   const edit = type === "edit";
+
   const defaultValues = {
     firstName: edit ? data?.firstName : "",
     lastName: edit ? data?.lastName : "",
@@ -57,6 +68,12 @@ const SignUpForm = ({
     resolver: zodResolver(sigupSchema),
     defaultValues,
   });
+  const selectedLocation =
+    form.watch("subscriptionPlan.gymLocation") || "ilorin";
+  const branchOption = getBranchOptions(planData, selectedLocation);
+  const nameOption = getPlanNameOptions(planData);
+  const planTypeOption = getPlanTypeOptions(planData);
+  const locationOption = getLocationOptions(planData);
 
   async function onSubmit(values: z.infer<typeof sigupSchema>) {
     console.log(values);
@@ -107,6 +124,42 @@ const SignUpForm = ({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        {selectNeeded && (
+          <div>
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              placeholder="Choose Your Location"
+              label="Location"
+              name={"subscriptionPlan.gymLocation"}
+              control={form.control}
+              items={locationOption}
+            ></CustomFormField>
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              placeholder="Choose Your Branch"
+              label="Branch"
+              name={"subscriptionPlan.gymBranch"}
+              control={form.control}
+              items={branchOption}
+            ></CustomFormField>
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              label="Plan Type"
+              name={"subscriptionPlan.planType"}
+              placeholder="Choose Your Plan Type"
+              control={form.control}
+              items={planTypeOption}
+            ></CustomFormField>
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              label="Plan Name"
+              name={"subscriptionPlan.name"}
+              placeholder="Choose Your Plan"
+              control={form.control}
+              items={nameOption}
+            ></CustomFormField>
+          </div>
+        )}
         <CustomFormField
           fieldType={FormFieldType.INPUT}
           label="First Name"
