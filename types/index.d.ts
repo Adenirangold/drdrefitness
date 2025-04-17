@@ -17,8 +17,10 @@ interface UserData {
     relationship: string;
   };
   currentSubscription?: {
-    plan: string;
-    startDate: Date;
+    planType: string;
+    name: string;
+    gymLocation: string;
+    gymBranch: string;
   };
 }
 

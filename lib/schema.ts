@@ -57,7 +57,7 @@ export const memberSchema = z.object({
   address: addressSchema,
   emergencyContact: emergencyContactSchema,
   // healthInfo: healthInfoSchema.optional(),
-  subscriptionPlan: planSchema.optional(),
+  currentSubscription: planSchema.optional(),
 });
 
 export const loginSchema = memberSchema.pick({

@@ -93,3 +93,12 @@ export function getLocationOptions(data: PlanData[]) {
     label: type.charAt(0).toUpperCase() + type.slice(1),
   }));
 }
+
+export function capitalizeAndConcat(...strings: string[]): string {
+  return strings
+    .map((str: string) => str.charAt(0).toUpperCase() + str.slice(1))
+    .join(" ");
+}
+export function capitalizeFirstLetters(...strings: string[]): string {
+  return strings.map((str) => str.charAt(0).toUpperCase()).join("");
+}

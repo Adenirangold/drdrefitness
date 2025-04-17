@@ -22,6 +22,7 @@ import {
   getPlanTypeOptions,
 } from "@/lib/utils";
 import { usePlans } from "@/lib/hooks/usePlan";
+import { useAuthenticatedUser } from "@/lib/hooks/useUser";
 type ActionType = "edit" | "sign-up" | "group" | "admin";
 
 const SignUpForm = ({
@@ -31,35 +32,49 @@ const SignUpForm = ({
 }: {
   type: ActionType;
   formParams?: any;
-  data?: Partial<UserData>;
+  data: Partial<UserData>;
 }) => {
-  const { data: usePlanData, isLoading, isError, error } = usePlans();
+  const {
+    data: usePlanData,
+    isLoading: planIsLoading,
+    isError: planIsError,
+    error: planError,
+  } = usePlans();
+  const {
+    data: useAuthenticatedUserData,
+    isLoading: userIsLoading,
+    isError: userIsError,
+    error: userError,
+  } = useAuthenticatedUser();
+
+  const userData = useAuthenticatedUserData?.data;
+
   const planData = usePlanData?.data || [];
   const { id, token } = formParams ?? {};
   const selectNeeded = type === "admin" || type === "sign-up";
   const edit = type === "edit";
 
   const defaultValues = {
-    firstName: edit ? data?.firstName : "",
-    lastName: edit ? data?.lastName : "",
-    email: edit ? data?.email : "",
+    firstName: edit ? userData?.firstName : "",
+    lastName: edit ? userData?.lastName : "",
+    email: edit ? userData?.email : "",
     password: edit ? "1234567" : "",
-    phoneNumber: edit ? data?.phoneNumber : "",
+    phoneNumber: edit ? userData?.phoneNumber : "",
     dateOfBirth: edit
-      ? data?.dateOfBirth
-        ? new Date(data.dateOfBirth)
-        : new Date()
-      : new Date(),
-    gender: edit ? data?.gender ?? "male" : "male",
+      ? userData?.dateOfBirth
+        ? new Date(userData.dateOfBirth)
+        : undefined
+      : undefined,
+    gender: edit ? userData?.gender ?? "male" : "male",
     address: {
-      street: edit ? data?.address?.street : "",
-      city: edit ? data?.address?.city : "",
-      state: edit ? data?.address?.state : "",
+      street: edit ? userData?.address?.street : "",
+      city: edit ? userData?.address?.city : "",
+      state: edit ? userData?.address?.state : "",
     },
     emergencyContact: {
-      fullName: edit ? data?.emergencyContact?.fullName : "",
-      phoneNumber: edit ? data?.emergencyContact?.phoneNumber : "",
-      relationship: edit ? data?.emergencyContact?.relationship : "",
+      fullName: edit ? userData?.emergencyContact?.fullName : "",
+      phoneNumber: edit ? userData?.emergencyContact?.phoneNumber : "",
+      relationship: edit ? userData?.emergencyContact?.relationship : "",
     },
   };
 
@@ -69,7 +84,7 @@ const SignUpForm = ({
     defaultValues,
   });
   const selectedLocation =
-    form.watch("subscriptionPlan.gymLocation") || "ilorin";
+    form.watch("currentSubscription.gymLocation") || "ilorin";
   const branchOption = getBranchOptions(planData, selectedLocation);
   const nameOption = getPlanNameOptions(planData);
   const planTypeOption = getPlanTypeOptions(planData);
@@ -78,7 +93,7 @@ const SignUpForm = ({
   async function onSubmit(values: z.infer<typeof sigupSchema>) {
     console.log(values);
 
-    if (edit) {
+    if (type === "edit") {
       const dirtyFields = form.formState.dirtyFields;
       const updateData = getDirtyData(values, dirtyFields);
 
@@ -101,13 +116,9 @@ const SignUpForm = ({
         return;
       }
       console.log(result.data?.message);
-    } else {
+    } else if (type === "sign-up") {
       const data = {
         ...values,
-        currentSubscription: {
-          plan: "67d19044aa1d17317dc3c4f2",
-          startDate: new Date(),
-        },
       };
 
       const result = await signUpAction(data);
@@ -130,7 +141,7 @@ const SignUpForm = ({
               fieldType={FormFieldType.SELECT}
               placeholder="Choose Your Location"
               label="Location"
-              name={"subscriptionPlan.gymLocation"}
+              name={"currentSubscription.gymLocation"}
               control={form.control}
               items={locationOption}
             ></CustomFormField>
@@ -138,14 +149,14 @@ const SignUpForm = ({
               fieldType={FormFieldType.SELECT}
               placeholder="Choose Your Branch"
               label="Branch"
-              name={"subscriptionPlan.gymBranch"}
+              name={"currentSubscription.gymBranch"}
               control={form.control}
               items={branchOption}
             ></CustomFormField>
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               label="Plan Type"
-              name={"subscriptionPlan.planType"}
+              name={"currentSubscription.planType"}
               placeholder="Choose Your Plan Type"
               control={form.control}
               items={planTypeOption}
@@ -153,7 +164,7 @@ const SignUpForm = ({
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               label="Plan Name"
-              name={"subscriptionPlan.name"}
+              name={"currentSubscription.name"}
               placeholder="Choose Your Plan"
               control={form.control}
               items={nameOption}

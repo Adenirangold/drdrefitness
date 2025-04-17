@@ -178,32 +178,29 @@ export const getAuthenticatedUser = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value || null;
 
-  try {
-    const result = await fetchData("/members/", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `authToken=${token}`,
-      },
+  const response = await fetch(`${config.API_KEY}/members/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    cache: "no-store",
+  });
 
-      credentials: "include",
-    });
-    if (result.error) {
-      return {
-        error: result.error,
-      };
-    }
-
-    return {
-      data: {
-        message: "success",
-        member: result.data.data,
-      },
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return { error: "Something went wrong. Please try again later" };
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
   }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
 };
 
 // ////////////////////////MEMBER ACTION//////////////////////////////
