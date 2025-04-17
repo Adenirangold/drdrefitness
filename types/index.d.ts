@@ -16,6 +16,10 @@ interface UserData {
     phoneNumber: string;
     relationship: string;
   };
+
+  isGroup?: boolean;
+  groupRole?: string;
+
   currentSubscription?: {
     planType: string;
     name: string;
@@ -66,4 +70,15 @@ interface SelectOption {
 }
 interface idAloneData {
   id: string;
+}
+
+interface NavItem {
+  title: string;
+  url: string;
+  icon: React.ComponentType<any>;
+  isActive?: boolean;
+  restrictTo?: {
+    isGroup: boolean;
+    groupRole?: string;
+  };
 }

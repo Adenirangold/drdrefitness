@@ -27,12 +27,11 @@ type ActionType = "edit" | "sign-up" | "group" | "admin";
 
 const SignUpForm = ({
   type,
-  data,
+
   formParams,
 }: {
   type: ActionType;
   formParams?: any;
-  data: Partial<UserData>;
 }) => {
   const {
     data: usePlanData,

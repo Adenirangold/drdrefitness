@@ -2,11 +2,14 @@
 import { getAllPlanAction, getAuthenticatedUser } from "@/lib/actions";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { HydrationBoundary } from "@tanstack/react-query";
+import { cookies } from "next/headers";
 
 import { AppSidebar } from "@/components/app-sidebar";
 import Header from "@/components/Header";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Suspense } from "react";
+import Spinner from "@/components/Spinner";
 
 export default async function MainLayout({
   children,
@@ -34,14 +37,16 @@ export default async function MainLayout({
   }
 
   const dehydratedState = dehydrate(queryClient);
+  const cookieStore = await cookies();
+  const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
 
   return (
     <HydrationBoundary state={dehydratedState}>
-      <SidebarProvider>
+      <SidebarProvider defaultOpen={defaultOpen}>
         <AppSidebar />
         <SidebarInset>
           <Header></Header>
-          {children}
+          <Suspense fallback={<Spinner />}>{children}</Suspense>
         </SidebarInset>
       </SidebarProvider>
     </HydrationBoundary>

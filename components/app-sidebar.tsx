@@ -1,25 +1,6 @@
 "use client";
 
 import * as React from "react";
-import {
-  AudioWaveform,
-  BookOpen,
-  Bot,
-  Command,
-  CreditCard,
-  Edit,
-  Frame,
-  GalleryVerticalEnd,
-  LayoutDashboard,
-  Lock,
-  Map,
-  PieChart,
-  RefreshCw,
-  Settings2,
-  SquareTerminal,
-  UserPlus,
-  Users,
-} from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -35,77 +16,45 @@ import { useAuthenticatedUser } from "@/lib/hooks/useUser";
 import Spinner from "./Spinner";
 import { capitalizeAndConcat, capitalizeFirstLetters } from "@/lib/utils";
 import { NavFooter } from "./nav-footer";
-
-// This is sample data.
-const data = {
-  navMain: [
-    {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
-      isActive: true,
-    },
-    {
-      title: "Models",
-      url: "#",
-      icon: Bot,
-    },
-    {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-    },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-    },
-  ],
-};
-
-const SIDEBAR_NAV = [
-  {
-    title: "Dashboard",
-    url: "/member/dashboard",
-    icon: LayoutDashboard,
-    isActive: true,
-  },
-  {
-    title: "Resubscribe",
-    url: "/member/resubscription",
-    icon: RefreshCw,
-  },
-  {
-    title: "Edit Profile",
-    url: "/member/edit-details",
-    icon: Edit,
-  },
-  {
-    title: "Invite Member",
-    url: "/member/invite-member",
-    icon: UserPlus,
-  },
-  {
-    title: "View Members",
-    url: "/member/group-members",
-    icon: Users,
-  },
-  {
-    title: "Update Password",
-    url: "/member/update-password",
-    icon: Lock,
-  },
-  {
-    title: "Subscriptions",
-    url: "#",
-    icon: CreditCard,
-  },
-];
+import SidebarSkeletons from "./skeletons/sidebar-skeletons";
+import { ADMIN_NAV, DIRECTOR_NAV, MEMBER_NAV } from "@/constants";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: member, isLoading, isError, error } = useAuthenticatedUser();
-  if (isLoading) return <Spinner></Spinner>;
-  // console.log(member?.data);
+
+  if (isLoading) {
+    return <SidebarSkeletons></SidebarSkeletons>;
+  }
+
+  const getNavItems = (role: string, userData: UserData) => {
+    let navItems: NavItem[];
+    switch (role.toLowerCase()) {
+      case "member":
+        navItems = MEMBER_NAV;
+        break;
+      case "admin":
+        navItems = ADMIN_NAV;
+        break;
+      case "director":
+        navItems = DIRECTOR_NAV;
+        break;
+      default:
+        return [];
+    }
+    return navItems.filter((item) => {
+      if (!item.restrictTo) return true;
+
+      const { isGroup, groupRole } = item.restrictTo;
+
+      if (isGroup && groupRole) {
+        return userData.isGroup === true && userData.groupRole === groupRole;
+      }
+
+      return userData.isGroup === isGroup;
+    });
+  };
+
+  const navItems = getNavItems(member?.data?.role, member?.data);
 
   const user = {
     email: member?.data?.email,
@@ -122,7 +71,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavUser user={user} />
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={SIDEBAR_NAV} />
+        <NavMain items={navItems} />
       </SidebarContent>
       <SidebarFooter>
         <NavFooter></NavFooter>
