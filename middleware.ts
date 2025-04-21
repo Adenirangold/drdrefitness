@@ -1,0 +1,80 @@
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { jwtVerify } from "jose";
+import { redis } from "./lib/redis";
+
+const CACHE_TTL = 5 * 60;
+
+export async function middleware(request: NextRequest) {
+  const publicPaths = [
+    "/sign-in",
+    "/sign-up",
+    "/accept-member",
+    "/accept-new-member",
+    "/reset-password",
+    "/forgot-password",
+  ];
+  const isPublicPath = publicPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+
+  if (isPublicPath) {
+    return NextResponse.next();
+  }
+
+  const token = request.cookies.get("authToken")?.value;
+
+  if (!token) {
+    return NextResponse.redirect(new URL("/sign-in", request.url));
+  }
+
+  try {
+    const decoded = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.JWT_SECRET!)
+    );
+
+    const cached = await redis.get(`user:${token}`);
+
+    if (cached) {
+      return NextResponse.next();
+    }
+
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/members/`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Cookie: `authToken=${token}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch user", {
+        cause: { status: response.status },
+      });
+    }
+
+    const userData = await response.json();
+
+    if (!userData?.data) {
+      throw new Error("No user found", { cause: { status: 401 } });
+    }
+    await redis.set(`user:${token}`, JSON.stringify(userData.data));
+    return NextResponse.next();
+  } catch (error: any) {
+    await redis.del(`user:${token}`);
+    if (error.name === "JsonWebTokenError" || error.cause?.status === 401) {
+      return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
+    console.error("Middleware error:", error);
+    return NextResponse.next();
+  }
+}
+
+export const config = {
+  matcher: "/member/dashboard",
+};

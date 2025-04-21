@@ -10,6 +10,7 @@ import Header from "@/components/Header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
 import Spinner from "@/components/Spinner";
+import { redirect } from "next/navigation";
 
 export default async function MainLayout({
   children,
@@ -17,14 +18,16 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   const queryClient = new QueryClient();
+  let user = null;
 
   try {
     await queryClient.prefetchQuery({
       queryKey: ["user"],
       queryFn: getAuthenticatedUser,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to prefetch user:", error);
+    redirect("/sign-in");
   }
 
   try {

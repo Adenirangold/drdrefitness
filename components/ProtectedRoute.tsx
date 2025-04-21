@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuthenticatedUser } from "@/lib/hooks/useUser";
+import { useAuthenticatedUser } from "@/hooks/useUser";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Spinner from "./Spinner";

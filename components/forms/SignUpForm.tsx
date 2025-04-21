@@ -21,8 +21,8 @@ import {
   getPlanNameOptions,
   getPlanTypeOptions,
 } from "@/lib/utils";
-import { usePlans } from "@/lib/hooks/usePlan";
-import { useAuthenticatedUser } from "@/lib/hooks/useUser";
+import { usePlans } from "@/hooks/usePlan";
+import { useAuthenticatedUser } from "@/hooks/useUser";
 type ActionType = "edit" | "sign-up" | "group" | "admin";
 
 const SignUpForm = ({

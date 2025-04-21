@@ -5,6 +5,7 @@ import {
 } from "@/lib/actions";
 import Spinner from "@/components/Spinner";
 import { cookies } from "next/headers";
+import { revalidatePath } from "next/cache";
 
 export default async function PaymentSuccess({
   searchParams,
@@ -28,7 +29,8 @@ export default async function PaymentSuccess({
         break;
       case "reactivate":
         result = await verifyPaymentAfterReactivationAction(reference);
-        redirectUrl = "/member";
+        redirectUrl = "/member/dashboard";
+
         break;
 
       default:

@@ -16,7 +16,9 @@ import {
   getPlanTypeOptions,
 } from "@/lib/utils";
 import { memberReactivateSubscriptionAction } from "@/lib/actions";
-import { usePlans } from "@/lib/hooks/usePlan";
+import { usePlans } from "@/hooks/usePlan";
+import { useReactivateSubscription } from "@/hooks/useUser";
+import SpinnerMini from "../SpinnerMini";
 
 const defaultValues = {
   planType: "individual" as "individual" | "couple" | "family",
@@ -27,8 +29,8 @@ const defaultValues = {
 
 const ReactivateClientsForm = () => {
   const { data, isLoading, isError, error } = usePlans();
+  const reactivateMutation = useReactivateSubscription();
   const planData = data?.data || [];
-  // console.log(data);
 
   const router = useRouter();
 
@@ -45,20 +47,20 @@ const ReactivateClientsForm = () => {
 
   async function onSubmit(values: z.infer<typeof resubscribePlanSchema>) {
     console.log(values);
+
     const data = {
       name: values.name,
       planType: values.planType,
       gymLocation: values.gymLocation,
       gymBranch: values.gymBranch,
     };
-    const result = await memberReactivateSubscriptionAction(data);
-    if (result.error) {
-      console.log(result.error);
+    reactivateMutation.mutate(data);
+    if (reactivateMutation.isError) {
       return;
     }
+
     const paymentType = "reactivate";
     document.cookie = `paymentType=${paymentType}; path=/; max-age=3600`;
-    window.location.href = result.data?.authorizationUrl;
   }
   return (
     <Form {...form}>
@@ -96,7 +98,13 @@ const ReactivateClientsForm = () => {
           items={nameOption}
         ></CustomFormField>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">
+          {reactivateMutation.isPending ? (
+            <SpinnerMini></SpinnerMini>
+          ) : (
+            "Reactivate Subscription"
+          )}
+        </Button>
       </form>
     </Form>
   );

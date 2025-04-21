@@ -12,7 +12,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
-import { useAuthenticatedUser } from "@/lib/hooks/useUser";
+import { useAuthenticatedUser } from "@/hooks/useUser";
 import Spinner from "./Spinner";
 import { capitalizeAndConcat, capitalizeFirstLetters } from "@/lib/utils";
 import { NavFooter } from "./nav-footer";
@@ -28,7 +28,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const getNavItems = (role: string, userData: UserData) => {
     let navItems: NavItem[];
-    switch (role.toLowerCase()) {
+    switch (role.toLowerCase() || "member") {
       case "member":
         navItems = MEMBER_NAV;
         break;

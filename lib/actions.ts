@@ -94,7 +94,7 @@ export const loginAction = async (data: LoginData) => {
       httpOnly: true,
       secure: true,
       sameSite: "lax",
-      maxAge: 60 * 60 * 24,
+      maxAge: 60 * 60 * 24 * 29,
     });
 
     return {
@@ -275,33 +275,30 @@ export const memberReactivateSubscriptionAction = async (
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value || null;
 
-  try {
-    const result = await fetchData("/members/subscription/", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `authToken=${token}`,
-      },
-      body: JSON.stringify(data),
+  const response = await fetch(`${config.API_KEY}/members/subscription/`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    body: JSON.stringify(data),
+    cache: "no-store",
+  });
 
-      credentials: "include",
-    });
-    if (result.error) {
-      return {
-        error: result.error,
-      };
-    }
-
-    return {
-      data: {
-        message: result.data?.message || "success",
-        authorizationUrl: result.data.data.authorizationUrl,
-      },
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return { error: "Something went wrong. Please try again later" };
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
   }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
 };
 export const verifyPaymentAfterReactivationAction = async (
   reference: string
@@ -453,35 +450,6 @@ export const deleteDepedantMemberAction = async (id: string) => {
 };
 
 ///////////////////////////////////////////PLAN//////////////////////////////////////
-
-// export const getAllPlanAction = async () => {
-//   try {
-//     const result = await fetchData("/plans/", {
-//       method: "GET",
-//       headers: {
-//         "Content-Type": "application/json",
-//       },
-//       credentials: "include",
-//       cache: 'no-store'
-//     });
-//     if (result.error) {
-//       return {
-//         error: result.error,
-//       };
-//     }
-
-//     return {
-//       data: {
-//         message: result.data?.message || "success",
-//         plan: result.data.data,
-//       },
-//     };
-//   } catch (error) {
-//     console.error("Error:", error);
-//     return { error: "Something went wrong. Please try again later" };
-//   }
-
-// };
 
 export const getAllPlanAction = async () => {
   const response = await fetch(`${config.API_KEY}/plans/`, {

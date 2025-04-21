@@ -1,10 +1,7 @@
 "use client";
 
-import { ChevronRight, type LucideIcon } from "lucide-react";
-
 import {
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -18,7 +15,6 @@ export function NavMain({ items }: { items: NavItem[] }) {
   const { setOpenMobile } = useSidebar();
   return (
     <SidebarGroup>
-      <SidebarGroupLabel>Menu</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <SidebarMenuItem key={item.title}>
