@@ -20,7 +20,7 @@ const EmailOnlyForm = ({
   formParams,
 }: {
   type: ActionType;
-  formParams: any;
+  formParams?: any;
 }) => {
   const { id, token } = formParams ?? {};
   const defaultValues = {

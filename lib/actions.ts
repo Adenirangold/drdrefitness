@@ -239,34 +239,32 @@ export const memberUpdatePasswordAction = async (data: UpdatePasswordData) => {
 export const memberUpdateAction = async (data: UserData) => {
   const cookieStore = await cookies();
   const token = cookieStore.get("authToken")?.value || null;
-  // console.log(data);
 
-  try {
-    const result = await fetchData("/members/", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Cookie: `authToken=${token}`,
-      },
-      body: JSON.stringify(data),
+  const response = await fetch(`${config.API_KEY}/members/`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    cache: "no-store",
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
 
-      credentials: "include",
-    });
-    if (result.error) {
-      return {
-        error: result.error,
-      };
-    }
-
-    return {
-      data: {
-        message: result.data?.message || "success",
-      },
-    };
-  } catch (error) {
-    console.error("Error:", error);
-    return { error: "Something went wrong. Please try again later" };
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
   }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
 };
 
 export const memberReactivateSubscriptionAction = async (

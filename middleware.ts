@@ -5,15 +5,15 @@ import { redis } from "./lib/redis";
 
 const CACHE_TTL = 5 * 60;
 
+const publicPaths = [
+  "/sign-in",
+  "/sign-up",
+  "/accept-member",
+  "/accept-new-member",
+  "/reset-password",
+  "/forgot-password",
+];
 export async function middleware(request: NextRequest) {
-  const publicPaths = [
-    "/sign-in",
-    "/sign-up",
-    "/accept-member",
-    "/accept-new-member",
-    "/reset-password",
-    "/forgot-password",
-  ];
   const isPublicPath = publicPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
@@ -28,16 +28,24 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
+  let userId;
+
   try {
+    const cached = await redis.get(`user:${userId}`);
+
+    if (cached) {
+      return NextResponse.next();
+    }
     const decoded = await jwtVerify(
       token,
       new TextEncoder().encode(process.env.JWT_SECRET!)
     );
 
-    const cached = await redis.get(`user:${token}`);
+    userId = decoded?.payload?.id;
 
-    if (cached) {
-      return NextResponse.next();
+    if (decoded?.payload?.exp! < Date.now() / 1000) {
+      await redis.del(`user:${userId}`);
+      return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
     const response = await fetch(
@@ -63,10 +71,12 @@ export async function middleware(request: NextRequest) {
     if (!userData?.data) {
       throw new Error("No user found", { cause: { status: 401 } });
     }
-    await redis.set(`user:${token}`, JSON.stringify(userData.data));
+    await redis.set(`user:${userId}`, JSON.stringify(userData.data), {
+      ex: CACHE_TTL,
+    });
     return NextResponse.next();
   } catch (error: any) {
-    await redis.del(`user:${token}`);
+    await redis.del(`user:${userId}`);
     if (error.name === "JsonWebTokenError" || error.cause?.status === 401) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
@@ -76,5 +86,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: "/member/dashboard",
+  matcher: ["/member/:path*", "/admin/:path*", "/director/:path*"],
 };

@@ -22,7 +22,9 @@ import {
   getPlanTypeOptions,
 } from "@/lib/utils";
 import { usePlans } from "@/hooks/usePlan";
-import { useAuthenticatedUser } from "@/hooks/useUser";
+import { useAuthenticatedUser, useUpdateMember } from "@/hooks/useUser";
+import Spinner from "../Spinner";
+import SpinnerMini from "../SpinnerMini";
 type ActionType = "edit" | "sign-up" | "group" | "admin";
 
 const SignUpForm = ({
@@ -33,25 +35,38 @@ const SignUpForm = ({
   type: ActionType;
   formParams?: any;
 }) => {
-  const {
-    data: usePlanData,
-    isLoading: planIsLoading,
-    isError: planIsError,
-    error: planError,
-  } = usePlans();
-  const {
-    data: useAuthenticatedUserData,
-    isLoading: userIsLoading,
-    isError: userIsError,
-    error: userError,
-  } = useAuthenticatedUser();
-
-  const userData = useAuthenticatedUserData?.data;
-
-  const planData = usePlanData?.data || [];
-  const { id, token } = formParams ?? {};
+  let usePlanData;
+  let planIsLoading;
+  let planIsError;
+  let planError;
+  let useAuthenticatedUserData;
+  let userIsLoading;
+  let userIsError;
+  let userError;
   const selectNeeded = type === "admin" || type === "sign-up";
   const edit = type === "edit";
+
+  const { mutate, isPending, isError } = useUpdateMember();
+
+  if (selectNeeded) {
+    const { data, isLoading, isError, error } = usePlans();
+
+    usePlanData = data;
+    planIsLoading = isLoading;
+    planIsError = isError;
+    planError = error;
+  }
+  if (edit) {
+    const { data, isLoading, isError, error } = useAuthenticatedUser();
+    useAuthenticatedUserData = data;
+    userIsLoading = isLoading;
+    userIsError = isError;
+    userError = error;
+  }
+
+  const userData = useAuthenticatedUserData?.data;
+  const planData = usePlanData?.data || [];
+  const { id, token } = formParams ?? {};
 
   const defaultValues = {
     firstName: edit ? userData?.firstName : "",
@@ -88,6 +103,7 @@ const SignUpForm = ({
   const nameOption = getPlanNameOptions(planData);
   const planTypeOption = getPlanTypeOptions(planData);
   const locationOption = getLocationOptions(planData);
+  const isTotalLoading = isPending || planIsLoading || userIsLoading;
 
   async function onSubmit(values: z.infer<typeof sigupSchema>) {
     console.log(values);
@@ -99,12 +115,12 @@ const SignUpForm = ({
       const data = {
         ...updateData,
       };
-      const result = await memberUpdateAction(data);
-      if (result.error) {
-        console.log(result.error);
+
+      mutate(data);
+
+      if (isError) {
         return;
       }
-      console.log(result.data?.message);
     } else if (type === "group") {
       const data = {
         ...values,
@@ -259,7 +275,9 @@ const SignUpForm = ({
           items={EMERGENCY_SELECT_GROUP}
         ></CustomFormField>
 
-        <Button type="submit">Submit</Button>
+        <Button type="submit">
+          {isTotalLoading ? <SpinnerMini></SpinnerMini> : "Submit"}
+        </Button>
       </form>
     </Form>
   );

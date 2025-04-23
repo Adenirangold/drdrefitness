@@ -19,6 +19,7 @@ import { memberReactivateSubscriptionAction } from "@/lib/actions";
 import { usePlans } from "@/hooks/usePlan";
 import { useReactivateSubscription } from "@/hooks/useUser";
 import SpinnerMini from "../SpinnerMini";
+import Spinner from "../Spinner";
 
 const defaultValues = {
   planType: "individual" as "individual" | "couple" | "family",
@@ -29,6 +30,9 @@ const defaultValues = {
 
 const ReactivateClientsForm = () => {
   const { data, isLoading, isError, error } = usePlans();
+  if (isLoading) {
+    return <Spinner />;
+  }
   const reactivateMutation = useReactivateSubscription();
   const planData = data?.data || [];
 

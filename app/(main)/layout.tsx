@@ -18,25 +18,15 @@ export default async function MainLayout({
   children: React.ReactNode;
 }) {
   const queryClient = new QueryClient();
-  let user = null;
 
   try {
     await queryClient.prefetchQuery({
       queryKey: ["user"],
       queryFn: getAuthenticatedUser,
+      staleTime: 1000 * 60 * 10,
     });
   } catch (error: any) {
     console.error("Failed to prefetch user:", error);
-    redirect("/sign-in");
-  }
-
-  try {
-    await queryClient.prefetchQuery({
-      queryKey: ["plans"],
-      queryFn: getAllPlanAction,
-    });
-  } catch (error) {
-    console.error("Failed to prefetch plans:", error);
   }
 
   const dehydratedState = dehydrate(queryClient);

@@ -23,7 +23,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: member, isLoading, isError, error } = useAuthenticatedUser();
 
   if (isLoading) {
-    return <SidebarSkeletons></SidebarSkeletons>;
+    return <Spinner></Spinner>;
   }
 
   const getNavItems = (role: string, userData: UserData) => {

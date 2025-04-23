@@ -1,9 +1,15 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useSuspenseQuery,
+} from "@tanstack/react-query";
 import {
   getAuthenticatedUser,
   memberReactivateSubscriptionAction,
+  memberUpdateAction,
   verifyPaymentAfterReactivationAction,
 } from "../lib/actions";
 
@@ -11,8 +17,9 @@ export function useAuthenticatedUser() {
   return useQuery({
     queryKey: ["user"],
     queryFn: getAuthenticatedUser,
-    refetchInterval: 900000, // Poll every 15 minutes (300,000 ms)
-    refetchIntervalInBackground: true, // Continue polling even when the tab is inactive
+    refetchInterval: 900000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
   });
 }
 
@@ -31,6 +38,22 @@ export function useReactivateSubscription() {
     },
     onError: (error) => {
       console.error("Failed to reactivate subscription:", error);
+    },
+  });
+}
+
+export function useUpdateMember() {
+  const queryClient = useQueryClient();
+
+  return useMutation<any, Error, UserData>({
+    mutationFn: (data: UserData) => memberUpdateAction(data),
+    onSuccess: () => {
+      console.log("Member updated successfully:");
+
+      queryClient.invalidateQueries({ queryKey: ["user"] });
+    },
+    onError: (error) => {
+      console.error("Failed to update member:", error.message);
     },
   });
 }
