@@ -1,7 +1,5 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
 import {
   SidebarMenu,
   SidebarMenuButton,
@@ -10,13 +8,22 @@ import {
 } from "@/components/ui/sidebar";
 import { LogOut } from "lucide-react";
 
+import { logOutAction } from "@/lib/actions";
+import { useRouter } from "next/navigation";
+
 export function NavFooter() {
   const { isMobile } = useSidebar();
+
+  const router = useRouter();
+  const handleLogout = async () => {
+    const result = await logOutAction();
+    router.replace("/sign-in");
+  };
 
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton>
+        <SidebarMenuButton onClick={handleLogout}>
           <LogOut></LogOut>
           <span>Log Out</span>
         </SidebarMenuButton>

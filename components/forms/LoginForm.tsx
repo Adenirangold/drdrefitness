@@ -1,7 +1,7 @@
 "use client";
 import { loginSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
@@ -9,7 +9,7 @@ import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
 import { loginAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/app/stores/authStore";
+import SpinnerMini from "../SpinnerMini";
 
 const defaultValues = {
   email: "",
@@ -18,6 +18,7 @@ const defaultValues = {
 
 const LoginForm = () => {
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -26,14 +27,17 @@ const LoginForm = () => {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     console.log(values);
+    setIsLoading(true);
 
     const data = { ...values };
 
     const result = await loginAction(data);
     if (result?.error) {
       console.log(result.error);
+      setIsLoading(false);
       return;
     }
+
     const role = result.data?.role;
 
     router.push(`/${role}/dashboard`);
@@ -55,7 +59,9 @@ const LoginForm = () => {
           inputType="password"
           control={form.control}
         ></CustomFormField>
-        <Button type="submit">Submit</Button>
+        <Button type="submit">
+          {isLoading ? <SpinnerMini></SpinnerMini> : "Log In"}
+        </Button>
       </form>
     </Form>
   );

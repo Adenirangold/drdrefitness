@@ -1,7 +1,12 @@
+import MemberList from "@/components/MemberList";
 import React from "react";
 
 const page = () => {
-  return <div>group page</div>;
+  return (
+    <div>
+      <MemberList></MemberList>
+    </div>
+  );
 };
 
 export default page;

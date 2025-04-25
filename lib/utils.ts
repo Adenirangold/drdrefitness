@@ -102,3 +102,32 @@ export function capitalizeAndConcat(...strings: string[]): string {
 export function capitalizeFirstLetters(...strings: string[]): string {
   return strings.map((str) => str.charAt(0).toUpperCase()).join("");
 }
+
+export function capitalizeFirstLetter(str: string) {
+  if (typeof str !== "string" || str.length === 0) {
+    return str;
+  }
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+export function formatDateString(dateString: string) {
+  const date = new Date(dateString);
+
+  const options = { year: "numeric", month: "long", day: "numeric" } as const;
+  return date.toLocaleDateString("en-US", options).replace(/,/, "");
+}
+export const getDaysRemaining = (
+  endDate: string | Date | undefined
+): number => {
+  if (!endDate) return 0;
+
+  const today = new Date();
+  const end = new Date(endDate);
+
+  today.setHours(0, 0, 0, 0);
+  end.setHours(0, 0, 0, 0);
+
+  const diffInMs = end.getTime() - today.getTime();
+  const daysRemaining = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
+
+  return daysRemaining >= 0 ? daysRemaining : 0;
+};

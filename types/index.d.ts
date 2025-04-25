@@ -40,7 +40,6 @@ interface ResetPasswordData {
 interface UpdatePasswordData {
   password: string;
   newPassword: string;
-  confirmPassword: string;
 }
 interface EmailALoneData {
   email: string;

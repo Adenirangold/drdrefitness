@@ -9,6 +9,8 @@ import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
 import { memberUpdatePasswordAction, ResetPasswordAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
+import { useUpdateMemberPassword } from "@/hooks/useUser";
+import SpinnerMini from "../SpinnerMini";
 
 const defaultValues = {
   password: "",
@@ -18,6 +20,7 @@ const defaultValues = {
 
 const UpdatePasswordForm = () => {
   const router = useRouter();
+  const { mutate, isPending, isError, error } = useUpdateMemberPassword();
   const form = useForm<z.infer<typeof passwordUpdateSchema>>({
     resolver: zodResolver(passwordUpdateSchema),
     defaultValues,
@@ -25,14 +28,15 @@ const UpdatePasswordForm = () => {
 
   async function onSubmit(values: z.infer<typeof passwordUpdateSchema>) {
     console.log(values);
-    const data = { ...values };
-    const result = await memberUpdatePasswordAction(data);
+    const data = {
+      newPassword: values.confirmPassword,
+      password: values.password,
+    };
 
-    if (result.error) {
-      console.log(result.error);
+    mutate(data);
+    if (isError) {
       return;
     }
-    console.log(result.data?.message);
   }
   return (
     <Form {...form}>
@@ -58,7 +62,9 @@ const UpdatePasswordForm = () => {
           inputType="password"
           control={form.control}
         ></CustomFormField>
-        <Button type="submit">Submit</Button>
+        <Button type="submit">
+          {isPending ? <SpinnerMini></SpinnerMini> : "Submit"}
+        </Button>
       </form>
     </Form>
   );

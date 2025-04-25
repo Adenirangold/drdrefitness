@@ -105,9 +105,9 @@ export const ADMIN_NAV = [
     isActive: true,
   },
   {
-    title: "Manage Users",
+    title: "Add Member",
     url: "/admin/users",
-    icon: Users,
+    icon: UserPlus,
   },
   {
     title: "Settings",

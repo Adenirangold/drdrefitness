@@ -8,8 +8,10 @@ import {
 } from "@tanstack/react-query";
 import {
   getAuthenticatedUser,
+  loginAction,
   memberReactivateSubscriptionAction,
   memberUpdateAction,
+  memberUpdatePasswordAction,
   verifyPaymentAfterReactivationAction,
 } from "../lib/actions";
 
@@ -54,6 +56,17 @@ export function useUpdateMember() {
     },
     onError: (error) => {
       console.error("Failed to update member:", error.message);
+    },
+  });
+}
+export function useUpdateMemberPassword() {
+  return useMutation<any, Error, UpdatePasswordData>({
+    mutationFn: (data: UpdatePasswordData) => memberUpdatePasswordAction(data),
+    onSuccess: (response) => {
+      console.log("Member password updated successfully:");
+    },
+    onError: (error) => {
+      console.error("Failed to update member password:", error.message);
     },
   });
 }
