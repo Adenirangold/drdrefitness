@@ -57,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const navItems = getNavItems(member?.data?.role, member?.data);
 
   const user = {
-    email: member?.data?.email,
+    role: member?.data?.role,
     name: capitalizeAndConcat(member?.data?.firstName, member?.data?.lastName),
     avatar: capitalizeFirstLetters(
       member?.data?.firstName,

@@ -142,7 +142,7 @@ const SignUpForm = ({
         return;
       }
       const paymentType = "signup";
-      document.cookie = `paymentType=${paymentType}; path=/; max-age=3600`;
+      document.cookie = `paymentRedirectType=${paymentType}; path=/; max-age=3600; SameSite=Lax; Secure`;
 
       window.location.href = result.data?.authorizationUrl;
     }

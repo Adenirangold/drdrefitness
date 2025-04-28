@@ -514,3 +514,35 @@ export const getAdminMembersAction = async () => {
     };
   }
 };
+// //////////////////////// Director//////////////////////////////////////
+
+export const getAllMembersAction = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  try {
+    const result = await fetchData("/director", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
+      },
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data?.status || "success",
+        data: result.data?.data,
+      },
+    };
+  } catch (error) {
+    return {
+      error: "Something went wrong. Please try again later",
+    };
+  }
+};

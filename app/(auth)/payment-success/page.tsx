@@ -16,8 +16,9 @@ export default async function PaymentSuccess({
 }) {
   const { reference } = await searchParams;
   const cookieStore = await cookies();
-  const paymentType = cookieStore.get("paymentType")?.value || "signup";
-  console.log(paymentType);
+  const paymentType = cookieStore.get("paymentRedirectType")?.value;
+
+  // console.log(paymentType);
 
   if (reference) {
     let redirectUrl = "/sign-in";

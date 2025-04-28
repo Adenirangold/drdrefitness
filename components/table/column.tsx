@@ -6,34 +6,8 @@ import {
   getDaysRemaining,
 } from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "../ui/button";
+
 import MemberModal from "../MemberModal";
-
-// interface Plan {
-//   name: string;
-//   planType: string;
-//   duration: number;
-//   price: number;
-// }
-
-// interface CurrentSubscription {
-//   plan: Plan;
-//   startDate: string;
-//   endDate: string;
-//   subscriptionStatus: string;
-// }
-
-// interface MemberResponse {
-//   _id: string;
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   phoneNumber: string;
-//   currentSubscription: CurrentSubscription;
-//   isGroup: boolean;
-//   groupRole: string;
-//   regNumber: string;
-// }
 
 export interface Plan {
   name: string;

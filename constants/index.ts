@@ -4,10 +4,13 @@ import {
   LayoutDashboard,
   Lock,
   RefreshCw,
+  User,
   UserPlus,
   Users,
   Settings,
-  BarChart,
+  Clipboard,
+  ClipboardPlus,
+  ChartNoAxesCombined,
 } from "lucide-react";
 
 export const GENDER_RADIO_GROUP = [
@@ -99,7 +102,7 @@ export const MEMBER_NAV = [
 ];
 export const ADMIN_NAV = [
   {
-    title: "Admin Dashboard",
+    title: "Members Overview",
     url: "/admin/dashboard",
     icon: LayoutDashboard,
     isActive: true,
@@ -118,19 +121,40 @@ export const ADMIN_NAV = [
 
 export const DIRECTOR_NAV = [
   {
-    title: "Director Dashboard",
+    title: "Members Overview",
     url: "/director/dashboard",
     icon: LayoutDashboard,
     isActive: true,
   },
   {
-    title: "Reports",
-    url: "/director/reports",
-    icon: BarChart,
+    title: "Analytics Reports",
+    url: "/director/financial-metric",
+    icon: ChartNoAxesCombined,
   },
   {
-    title: "Manage Admins",
-    url: "/director/admins",
-    icon: Users,
+    title: "Plan Management",
+    url: "/director/manage-plans",
+    icon: Clipboard,
+  },
+  {
+    title: "Create Plan",
+    url: "/director/create-plan",
+    icon: ClipboardPlus,
+  },
+  {
+    title: "Admin Management",
+    url: "/director/manage-admins",
+    icon: User,
+  },
+  {
+    title: "Create Admin",
+    url: "/director/create-admin",
+    icon: UserPlus,
   },
 ];
+
+export const currentLocations = [
+  { location: "abuja", branch: ["wuse"] },
+  { location: "ilorin", branch: ["gra", "tanke"] },
+];
+export const planType = [];

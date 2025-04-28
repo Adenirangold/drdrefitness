@@ -13,7 +13,7 @@ const MemberModal = ({ member }: { member: MemberResponse }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-300">
-          View Member Details
+          View Details
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl shadow-2xl p-8">

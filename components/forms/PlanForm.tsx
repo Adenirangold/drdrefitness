@@ -8,18 +8,7 @@ import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/app/stores/authStore";
-import {
-  getBranchOptions,
-  getLocationOptions,
-  getPlanNameOptions,
-  getPlanTypeOptions,
-} from "@/lib/utils";
-import { memberReactivateSubscriptionAction } from "@/lib/actions";
-import { usePlans } from "@/hooks/usePlan";
-import { useReactivateSubscription } from "@/hooks/useUser";
 import SpinnerMini from "../SpinnerMini";
-import Spinner from "../Spinner";
 
 const defaultValues = {
   planType: "individual" as "individual" | "couple" | "family",
@@ -28,14 +17,7 @@ const defaultValues = {
   name: "",
 };
 
-const ReactivateClientsForm = () => {
-  const { data, isLoading, isError, error } = usePlans();
-  if (isLoading) {
-    return <Spinner />;
-  }
-  const reactivateMutation = useReactivateSubscription();
-  const planData = data?.data || [];
-
+const PlanForm = () => {
   const router = useRouter();
 
   const form = useForm<z.infer<typeof resubscribePlanSchema>>({
@@ -44,26 +26,8 @@ const ReactivateClientsForm = () => {
   });
   const selectedLocation = form.watch("gymLocation") || "ilorin";
 
-  const branchOption = getBranchOptions(planData, selectedLocation);
-  const nameOption = getPlanNameOptions(planData);
-  const planTypeOption = getPlanTypeOptions(planData);
-  const locationOption = getLocationOptions(planData);
-
   async function onSubmit(values: z.infer<typeof resubscribePlanSchema>) {
     console.log(values);
-    const paymentType = "reactivate";
-    document.cookie = `paymentRedirectType=${paymentType}; path=/; max-age=3600; SameSite=Lax; Secure`;
-    const data = {
-      name: values.name,
-      planType: values.planType,
-      gymLocation: values.gymLocation,
-      gymBranch: values.gymBranch,
-    };
-
-    reactivateMutation.mutate(data);
-    if (reactivateMutation.isError) {
-      return;
-    }
   }
   return (
     <Form {...form}>
@@ -74,7 +38,7 @@ const ReactivateClientsForm = () => {
           label="Location"
           name={"gymLocation"}
           control={form.control}
-          items={locationOption}
+          //   items={locationOption}
         ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.SELECT}
@@ -82,7 +46,7 @@ const ReactivateClientsForm = () => {
           label="Branch"
           name={"gymBranch"}
           control={form.control}
-          items={branchOption}
+          //   items={branchOption}
         ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.SELECT}
@@ -90,7 +54,7 @@ const ReactivateClientsForm = () => {
           name={"planType"}
           placeholder="Choose Your Plan Type"
           control={form.control}
-          items={planTypeOption}
+          //   items={planTypeOption}
         ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.SELECT}
@@ -98,19 +62,13 @@ const ReactivateClientsForm = () => {
           name={"name"}
           placeholder="Choose Your Plan"
           control={form.control}
-          items={nameOption}
+          //   items={nameOption}
         ></CustomFormField>
 
-        <Button type="submit">
-          {reactivateMutation.isPending ? (
-            <SpinnerMini></SpinnerMini>
-          ) : (
-            "Reactivate Subscription"
-          )}
-        </Button>
+        <Button type="submit">Add Plan</Button>
       </form>
     </Form>
   );
 };
 
-export default ReactivateClientsForm;
+export default PlanForm;
