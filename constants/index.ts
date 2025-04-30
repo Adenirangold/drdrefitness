@@ -1,3 +1,4 @@
+import { planSchema } from "@/lib/schema";
 import {
   CreditCard,
   Edit,
@@ -153,8 +154,15 @@ export const DIRECTOR_NAV = [
   },
 ];
 
-export const currentLocations = [
+export const CurrentLocations = [
   { location: "abuja", branch: ["wuse"] },
   { location: "ilorin", branch: ["gra", "tanke"] },
 ];
-export const planType = [];
+export const PlanName = [
+  { name: "monthly", duration: 31 },
+  { name: "2-months", duration: 61 },
+  { name: "3-months", duration: 93 },
+  { name: "6-months", duration: 184 },
+  { name: "1-year", duration: 365 },
+];
+export const PlanType = ["individual", "couple", "family"];

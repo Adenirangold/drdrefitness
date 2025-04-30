@@ -482,7 +482,67 @@ export const getAllPlanAction = async () => {
   return result;
 };
 
-///////////////////////////////////////////PLAN//////////////////////////////////////
+export const addPlanAction = async (data: PlanData) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  const response = await fetch(`${config.API_KEY}/plans/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    body: JSON.stringify(data),
+
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};
+
+export const editPlanAction = async (data: Partial<PlanData>, id: string) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  const response = await fetch(`${config.API_KEY}/plans/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    body: JSON.stringify(data),
+
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};
+
+///////////////////////////////////////////ADMIN//////////////////////////////////////
 
 export const getAdminMembersAction = async () => {
   const cookieStore = await cookies();

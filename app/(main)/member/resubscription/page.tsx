@@ -1,15 +1,3 @@
-// import ReactivateClientsForm from "@/components/forms/ReactivateClientsForm";
-// import { getAllPlanAction } from "@/lib/actions";
-// import React from "react";
-
-// const page = async () => {
-//   return (
-//     <div>
-//       <ReactivateClientsForm></ReactivateClientsForm>
-//     </div>
-//   );
-// };
-
 import { getAllPlanAction } from "@/lib/actions";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { HydrationBoundary } from "@tanstack/react-query";

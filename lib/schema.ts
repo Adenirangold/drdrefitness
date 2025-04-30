@@ -27,13 +27,12 @@ const healthInfoSchema = z.object({
 });
 
 export const planSchema = z.object({
-  planId: z.string().min(2).max(50).optional(),
   planType: z.enum(["individual", "couple", "family"]).default("individual"),
   name: z.string().min(2).max(50),
   gymLocation: z.string().min(2).max(50),
   gymBranch: z.string().min(2).max(50),
-  benefits: z.array(z.string()).optional(),
-  price: z.coerce.number().positive().optional(),
+  benefits: z.string().optional(),
+  price: z.coerce.number().positive(),
   duration: z.coerce.number().positive().optional(),
 });
 
@@ -91,6 +90,7 @@ export const passwordUpdateSchema = z
   });
 
 export const memberUpdateSchema = memberSchema.partial();
+export const planUpdateSchema = planSchema.partial();
 
 export const resubscribePlanSchema = planSchema.partial();
 

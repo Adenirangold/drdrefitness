@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { config } from "./config";
+import { CurrentLocations, PlanName, PlanType } from "@/constants";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -130,4 +131,46 @@ export const getDaysRemaining = (
   const daysRemaining = Math.ceil(diffInMs / (1000 * 60 * 60 * 24));
 
   return daysRemaining >= 0 ? daysRemaining : 0;
+};
+
+export const locationItems = CurrentLocations.map((loc) => ({
+  value: loc.location,
+  label: loc.location.charAt(0).toUpperCase() + loc.location.slice(1),
+}));
+export const planTypeItems = PlanName.map((plan) => ({
+  value: plan.name,
+  label: plan.name.replace("-", " ").toUpperCase(),
+}));
+
+export const getBranches = (locationValue: string) => {
+  const foundLocation = CurrentLocations.find(
+    (loc) => loc.location.toLowerCase() === locationValue.toLowerCase()
+  );
+  return foundLocation
+    ? foundLocation.branch.map((branch) => ({
+        value: branch,
+        label: branch.charAt(0).toUpperCase() + branch.slice(1), // e.g., "wuse" -> "Wuse"
+      }))
+    : [];
+};
+export const PlanTypeItems = PlanType.map((value) => ({
+  value,
+  label: value.charAt(0).toUpperCase() + value.slice(1),
+}));
+
+export const getDurationByName = (planName: string) => {
+  const plan = PlanName.find(
+    (p) => p.name.toLowerCase() === planName.toLowerCase()
+  );
+  return plan ? plan.duration : 0;
+};
+export const generateRandomId = (length = 8) => {
+  const characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
+  for (let i = 0; i < length; i++) {
+    const randomIndex = Math.floor(Math.random() * characters.length);
+    result += characters[randomIndex];
+  }
+  return result;
 };

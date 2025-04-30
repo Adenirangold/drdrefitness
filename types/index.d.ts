@@ -51,9 +51,9 @@ interface PlanData {
   planType: "individual" | "couple" | "family";
   gymLocation: string;
   gymBranch: string;
-  price?: number;
-  benefit?: [string];
-  duration?: number;
+  price: number;
+  benefits?: string[];
+  duration: number;
 }
 
 interface ActivationData {
