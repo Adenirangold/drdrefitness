@@ -541,6 +541,33 @@ export const editPlanAction = async (data: Partial<PlanData>, id: string) => {
 
   return result;
 };
+export const deletePlanAction = async (id: string) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  const response = await fetch(`${config.API_KEY}/plans/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};
 
 ///////////////////////////////////////////ADMIN//////////////////////////////////////
 

@@ -94,40 +94,22 @@ export const planUpdateSchema = planSchema.partial();
 
 export const resubscribePlanSchema = planSchema.partial();
 
-// const adminLocationSchema = z.object({
-//   location: z.string().min(2).max(50),
-//   branch: z.string().min(2).max(50),
-// });
-// export const groupMemberSchema = memberSchema.pick({
-//   email: true,
-//   password: true,
-//   firstName: true,
-//   lastName: true,
-//   phoneNumber: true,
-//   address: true,
-//   emergencyContact: true,
-//   healthInfo: true,
-//   gender: true,
-//   dateOfBirth: true,
-// });
-// // export const adminSchema = memberSchema.pick({
-// //   email: true,
-// //   password: true,
-// //   firstName: true,
-// //   lastName: true,
-// //   role: true,
-// //   phoneNumber: true,
-// //   adminLocation: true,
-// // });
+export const adminSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  firstName: z
+    .string()
+    .min(2, "First Name is required")
+    .max(50, "First Name should not be more than 50 letters"),
+  lastName: z
+    .string()
+    .min(2, "Last Name is required")
+    .max(50, "Last Name should not be more than 50 letters"),
 
-// export const planSchema = z.object({
-//   planId: z.string().min(2).max(50),
-//   planType: z.enum(["individual", "couple", "family"]).default("family"),
-//   name: z.string().min(2).max(50),
-//   gymLocation: z.string().min(2).max(50),
-//   gymBranch: z.string().min(2).max(50),
-//   benefits: z.array(z.string()),
-//   price: z.coerce.number().positive(),
-//   duration: z.coerce.number().positive(),
-// });
-// export const updatePlanSchema = planSchema.omit({ planId: true }).partial();
+  phoneNumber: z
+    .string()
+    .min(11, "Phone number should be at least 11 digits")
+    .max(15),
+  adminBranch: z.string().min(2).max(50),
+  adminLocation: z.string().min(2).max(50),
+});

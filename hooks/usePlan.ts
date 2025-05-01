@@ -6,6 +6,7 @@ import {
 } from "@tanstack/react-query";
 import {
   addPlanAction,
+  deletePlanAction,
   editPlanAction,
   getAllPlanAction,
 } from "../lib/actions";
@@ -41,6 +42,20 @@ export function useEditPlan() {
     mutationFn: (data: Partial<PlanData>) => editPlanAction(data, data._id!),
     onSuccess: (response) => {
       console.log("plan updated sucessfully");
+
+      queryClient.invalidateQueries({ queryKey: ["plans"] });
+    },
+    onError: (error) => {
+      console.error("Failed to update plan:", error);
+    },
+  });
+}
+export function useDeletePlan() {
+  const queryClient = useQueryClient();
+  return useMutation<any, Error, string>({
+    mutationFn: (id) => deletePlanAction(id),
+    onSuccess: (response) => {
+      console.log("plan deleted sucessfully");
 
       queryClient.invalidateQueries({ queryKey: ["plans"] });
     },

@@ -23,7 +23,7 @@ export function NavFooter() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton onClick={handleLogout}>
+        <SidebarMenuButton tooltip="Log Out" onClick={handleLogout}>
           <LogOut></LogOut>
           <span>Log Out</span>
         </SidebarMenuButton>

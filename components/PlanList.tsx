@@ -1,36 +1,42 @@
 "use client";
-import { usePlans } from "@/hooks/usePlan";
-import React, { useState } from "react";
+import { useDeletePlan, usePlans } from "@/hooks/usePlan";
+import React, { useEffect, useState } from "react";
 import Spinner from "./Spinner";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import {
+  capitalizeFirstLetter,
+  formatPrice,
+  getLocationItems,
+} from "@/lib/utils";
 import PlanEditModal from "./PlanEditModal";
+import ActionModal from "./ActionModal";
+import SpinnerMini from "./SpinnerMini";
 
 function PlanList() {
   const [selectedLocation, setSelectedLocation] = useState("All");
   const { data, isLoading, isError, error } = usePlans();
+  const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null);
+  const [openModalPlanId, setOpenModalPlanId] = useState<string | null>(null);
+  const deletePlanMutation = useDeletePlan();
+
   if (isLoading) {
     return <Spinner></Spinner>;
   }
   const planData = data.data;
-  const locationItems = [
-    ...new Set(planData.map((item: any) => item.gymLocation)),
-  ].map((loc: any) => ({
-    value: loc,
-    label: loc.charAt(0).toUpperCase() + loc.slice(1),
-  }));
+  const locationItems = getLocationItems(planData);
 
-  const formatPrice = (price: number) => {
-    return `₦${price?.toLocaleString("en-NG")}`;
-  };
-
-  const handleEdit = () => {
-    console.log(`Editing plan: ${planData.planId}`);
-    // Add your edit logic here (e.g., open a modal)
-  };
-
-  const handleDelete = () => {
-    console.log(`Deleting plan: ${planData.planId}`);
-    // Add your delete logic here (e.g., API call)
+  const handleDelete = async (id: string) => {
+    console.log(`Initiating deletion for plan: ${id}`);
+    setDeletingPlanId(id);
+    setOpenModalPlanId(id);
+    try {
+      await deletePlanMutation.mutateAsync(id);
+      setOpenModalPlanId(null);
+      setDeletingPlanId(null);
+    } catch (err) {
+      console.error("Failed to delete plan:", err);
+      setDeletingPlanId(null);
+      setOpenModalPlanId(null);
+    }
   };
 
   return (
@@ -71,7 +77,8 @@ function PlanList() {
               className="bg-white rounded-lg shadow-lg p-6 w-full"
             >
               <h2 className="text-xl font-bold text-gray-800 mb-4">
-                {capitalizeFirstLetter(plan.name)}
+                {capitalizeFirstLetter(plan.name)} (
+                {capitalizeFirstLetter(plan.planType)})
               </h2>
 
               {/* Plan Name and Type */}
@@ -121,15 +128,27 @@ function PlanList() {
                 </ul>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex justify-end space-x-4">
                 <PlanEditModal plan={plan}></PlanEditModal>
-                <button
-                  onClick={handleDelete}
-                  className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
-                >
-                  Delete
-                </button>
+                <ActionModal
+                  id={plan._id}
+                  title={`Are you sure ?`}
+                  description={`This action cannot be undone. This action will permanently delete  ${plan.name?.toUpperCase()}-PLAN for ${plan?.gymBranch?.toUpperCase()}-BRANCH in ${plan.gymLocation?.toUpperCase()}.`}
+                  trigger="Delete"
+                  sucessTriger={
+                    deletePlanMutation.isPending ? (
+                      <SpinnerMini></SpinnerMini>
+                    ) : (
+                      "Delete Plan"
+                    )
+                  }
+                  failTriger="Cancel"
+                  onSucessClick={() => handleDelete(plan._id)}
+                  open={openModalPlanId === plan._id}
+                  setOpen={(isOpen) =>
+                    setOpenModalPlanId(isOpen ? plan._id : null)
+                  }
+                ></ActionModal>
               </div>
             </div>
           ))}

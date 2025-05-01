@@ -174,3 +174,18 @@ export const generateRandomId = (length = 8) => {
   }
   return result;
 };
+export const formatPrice = (price: number) => {
+  return `₦${price?.toLocaleString("en-NG")}`;
+};
+export function getLocationItems(
+  planData: any[]
+): { value: string; label: string }[] {
+  const uniqueLocations = [
+    ...new Set(planData.map((item) => item.gymLocation)),
+  ];
+
+  return uniqueLocations.map((loc) => ({
+    value: loc,
+    label: loc.charAt(0).toUpperCase() + loc.slice(1),
+  }));
+}

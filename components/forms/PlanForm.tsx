@@ -46,6 +46,12 @@ const PlanForm = ({
     }
   }, [editMutation.isSuccess, closeModal]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      router.push("/director/manage-plans");
+    }
+  }, [isSuccess]);
+
   const defaultValues = {
     planType: edit
       ? data?.planType
@@ -88,7 +94,6 @@ const PlanForm = ({
       }
     } else {
       const data = {
-        planId: generateRandomId(12),
         planType: values.planType!,
         name: values.name!,
         gymLocation: values.gymLocation!,
@@ -107,8 +112,6 @@ const PlanForm = ({
     if (isError || editMutation.isError) {
       return;
     }
-
-    router.push("/director/manage-plans");
   }
   return (
     <Form {...form}>
@@ -160,7 +163,7 @@ const PlanForm = ({
         ></CustomFormField>
 
         <Button type="submit">
-          {isPending || editMutation.isPending ? (
+          {(isPending && !isSuccess) || editMutation.isPending ? (
             <SpinnerMini></SpinnerMini>
           ) : edit ? (
             "Edit Plan"
