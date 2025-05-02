@@ -81,3 +81,17 @@ interface NavItem {
     groupRole?: string;
   };
 }
+
+interface AdminData {
+  _id?: string;
+  email: string;
+  password: string;
+  firstName: string;
+  lastName: string;
+  role: string;
+  phoneNumber: string;
+  adminLocation: {
+    location: string;
+    branch: string;
+  };
+}

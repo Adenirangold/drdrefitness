@@ -1,7 +1,7 @@
 "use client";
-import { adminSchema, loginSchema } from "@/lib/schema";
+import { adminSchema, adminSchemaUpdate, loginSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
@@ -10,53 +10,94 @@ import { Button } from "../ui/button";
 import { loginAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import SpinnerMini from "../SpinnerMini";
-import { getBranches, locationItems } from "@/lib/utils";
+import { getBranches, getDirtyData, locationItems } from "@/lib/utils";
+import { useAddAdmin, useEditAdmin } from "@/hooks/useAdmin";
 
-const defaultValues = {
-  email: "",
-  password: "",
-};
-
-const AdminForm = () => {
+const AdminForm = ({
+  edit,
+  data,
+  closeModal,
+}: {
+  edit?: boolean;
+  data?: AdminData;
+  closeModal?: () => void;
+}) => {
   const router = useRouter();
-
-  const form = useForm<z.infer<typeof adminSchema>>({
-    resolver: zodResolver(adminSchema),
+  const addAdminMutation = useAddAdmin();
+  const editAdminMutation = useEditAdmin();
+  const defaultValues = {
+    email: edit ? data?.email : "",
+    phoneNumber: edit ? data?.phoneNumber : "",
+    password: edit ? "********" : "",
+    adminLocation: {
+      branch: edit ? data?.adminLocation.branch : "",
+      location: edit ? data?.adminLocation.location : "",
+    },
+  };
+  const adminFormSchema = edit ? adminSchemaUpdate : adminSchema;
+  const form = useForm<z.infer<typeof adminFormSchema>>({
+    resolver: zodResolver(adminFormSchema),
     defaultValues,
   });
 
-  const selectedLocation = form.watch("adminLocation") || "ilorin";
+  const selectedLocation = form.watch("adminLocation.location") || "ilorin";
   const branchesItems = getBranches(selectedLocation);
+  useEffect(() => {
+    if (editAdminMutation.isSuccess) {
+      if (closeModal) {
+        closeModal();
+      }
+    }
+  }, [editAdminMutation.isSuccess, closeModal]);
+  useEffect(() => {
+    if (addAdminMutation.isSuccess) {
+      router.push("/director/manage-admins");
+    }
+  }, [addAdminMutation.isSuccess]);
 
-  async function onSubmit(values: z.infer<typeof adminSchema>) {
-    console.log(values);
+  async function onSubmit(values: z.infer<typeof adminFormSchema>) {
+    // console.log(values);
+
+    if (edit) {
+      const dirtyFields = form.formState.dirtyFields;
+      const updateData = getDirtyData(values, dirtyFields);
+      const updatedData = {
+        ...updateData,
+        _id: data?._id,
+      };
+
+      console.log(updatedData);
+
+      editAdminMutation.mutate(updatedData);
+    } else {
+      const data = {
+        email: values.email!,
+        password: values.password!,
+        firstName: values.adminLocation?.branch!,
+        lastName: "branch",
+        role: "admin",
+        phoneNumber: values.phoneNumber!,
+        adminLocation: {
+          location: values.adminLocation?.location!,
+          branch: values.adminLocation?.branch!,
+        },
+      };
+
+      addAdminMutation.mutate(data);
+    }
   }
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <CustomFormField
-          fieldType={FormFieldType.SELECT}
-          placeholder="Choose Location"
-          label="Location"
-          name={"adminLocation"}
-          control={form.control}
-          items={locationItems}
-        ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.SELECT}
-          placeholder="Choose Branch"
-          label="Branch"
-          name={"adminBranch"}
-          control={form.control}
-          items={branchesItems}
-        ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.INPUT}
           label="Email"
           name="email"
           inputType="email"
           control={form.control}
+          disabled={edit}
         ></CustomFormField>
+
         <CustomFormField
           fieldType={FormFieldType.INPUT}
           label="Password"
@@ -64,9 +105,42 @@ const AdminForm = () => {
           inputType="password"
           control={form.control}
         ></CustomFormField>
+
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Phone Number"
+          name="phoneNumber"
+          inputType="number"
+          control={form.control}
+        ></CustomFormField>
+
+        <CustomFormField
+          fieldType={FormFieldType.SELECT}
+          placeholder="Choose Location"
+          label="Location"
+          disabled={edit}
+          name={"adminLocation.location"}
+          control={form.control}
+          items={locationItems}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.SELECT}
+          placeholder="Choose Branch"
+          label="Branch"
+          disabled={edit}
+          name={"adminLocation.branch"}
+          control={form.control}
+          items={branchesItems}
+        ></CustomFormField>
+
         <Button type="submit">
-          {/* {isLoading ? <SpinnerMini></SpinnerMini> : "Log In"} */}
-          Create Admin
+          {addAdminMutation.isPending || editAdminMutation.isPending ? (
+            <SpinnerMini></SpinnerMini>
+          ) : edit ? (
+            "Edit Admin"
+          ) : (
+            "Add Admin"
+          )}
         </Button>
       </form>
     </Form>

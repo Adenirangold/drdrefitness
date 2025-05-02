@@ -633,3 +633,119 @@ export const getAllMembersAction = async () => {
     };
   }
 };
+export const getAdminAction = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  try {
+    const result = await fetchData("/director/admin", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Cookie: `authToken=${token}`,
+      },
+      credentials: "include",
+    });
+    if (result.error) {
+      return {
+        error: result.error,
+      };
+    }
+
+    return {
+      data: {
+        message: result.data?.status || "success",
+        data: result.data?.data,
+      },
+    };
+  } catch (error) {
+    return {
+      error: "Something went wrong. Please try again later",
+    };
+  }
+};
+
+export const addAdminAction = async (data: AdminData) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  const response = await fetch(`${config.API_KEY}/admin`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    body: JSON.stringify(data),
+
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};
+export const editAdminAction = async (data: Partial<AdminData>) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  const response = await fetch(`${config.API_KEY}/director/admin/${data._id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    body: JSON.stringify(data),
+
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};
+export const deleteAdminAction = async (id: string) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  const response = await fetch(`${config.API_KEY}/director/admin/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};

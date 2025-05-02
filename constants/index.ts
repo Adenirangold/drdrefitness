@@ -155,8 +155,9 @@ export const DIRECTOR_NAV = [
 ];
 
 export const CurrentLocations = [
-  { location: "abuja", branch: ["wuse"] },
-  { location: "ilorin", branch: ["gra", "tanke"] },
+  { location: "abuja", branch: ["wuse", "gwarinpa"] },
+  { location: "ilorin", branch: ["gra", "tanke", "kwara-poly"] },
+  { location: "lagos", branch: ["osapa", "lekki", "oshodi"] },
 ];
 export const PlanName = [
   { name: "monthly", duration: 31 },

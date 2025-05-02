@@ -1,4 +1,3 @@
-import mongoose from "mongoose";
 import { z } from "zod";
 
 const addressSchema = z.object({
@@ -97,19 +96,15 @@ export const resubscribePlanSchema = planSchema.partial();
 export const adminSchema = z.object({
   email: z.string().email("Invalid email address"),
   password: z.string().min(6, "Password must be at least 6 characters"),
-  firstName: z
-    .string()
-    .min(2, "First Name is required")
-    .max(50, "First Name should not be more than 50 letters"),
-  lastName: z
-    .string()
-    .min(2, "Last Name is required")
-    .max(50, "Last Name should not be more than 50 letters"),
-
   phoneNumber: z
     .string()
     .min(11, "Phone number should be at least 11 digits")
     .max(15),
-  adminBranch: z.string().min(2).max(50),
-  adminLocation: z.string().min(2).max(50),
+
+  adminLocation: z.object({
+    location: z.string().min(2).max(50),
+    branch: z.string().min(2).max(50),
+  }),
 });
+
+export const adminSchemaUpdate = adminSchema.partial();

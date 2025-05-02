@@ -9,9 +9,10 @@ import {
 } from "@/components/ui/dialog";
 
 import React, { useState } from "react";
-import PlanForm from "./forms/PlanForm";
 
-const PlanEditModal = ({ plan }: { plan: PlanData }) => {
+import AdminForm from "./forms/AdminForm";
+
+const AdminEditModal = ({ data }: { data: AdminData }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,15 +22,15 @@ const PlanEditModal = ({ plan }: { plan: PlanData }) => {
         <DialogHeader>
           <DialogTitle>Edit Plan?</DialogTitle>
           <DialogDescription>Follow All Instructions.</DialogDescription>
-          <PlanForm
-            edit={true}
+          <AdminForm
+            data={data}
             closeModal={() => setOpen(false)}
-            data={plan}
-          ></PlanForm>
+            edit={true}
+          ></AdminForm>
         </DialogHeader>
       </DialogContent>
     </Dialog>
   );
 };
 
-export default PlanEditModal;
+export default AdminEditModal;
