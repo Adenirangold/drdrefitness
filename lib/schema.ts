@@ -35,6 +35,13 @@ export const planSchema = z.object({
   duration: z.coerce.number().positive().optional(),
 });
 
+export const currentSubscriptionPlanSchema = planSchema.pick({
+  planType: true,
+  name: true,
+  gymBranch: true,
+  gymLocation: true,
+});
+
 export const memberSchema = z.object({
   firstName: z
     .string()
@@ -55,7 +62,7 @@ export const memberSchema = z.object({
   address: addressSchema,
   emergencyContact: emergencyContactSchema,
   // healthInfo: healthInfoSchema.optional(),
-  currentSubscription: planSchema.optional(),
+  currentSubscription: currentSubscriptionPlanSchema.optional(),
 });
 
 export const loginSchema = memberSchema.pick({

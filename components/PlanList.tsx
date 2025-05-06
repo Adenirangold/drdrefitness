@@ -73,7 +73,7 @@ function PlanList() {
           )
           .map((plan: any) => (
             <div
-              key={plan.planId}
+              key={plan._id}
               className="bg-white rounded-lg shadow-lg p-6 w-full"
             >
               <h2 className="text-xl font-bold text-gray-800 mb-4">

@@ -1,14 +1,14 @@
 "use client";
 import { resubscribePlanSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
-import useAuthStore from "@/app/stores/authStore";
+
 import {
   getBranchOptions,
   getLocationOptions,
@@ -30,6 +30,7 @@ const defaultValues = {
 
 const ReactivateClientsForm = () => {
   const { data, isLoading, isError, error } = usePlans();
+  const [selectedLocation, setSelectedLocation] = useState("ilorin");
   if (isLoading) {
     return <Spinner />;
   }
@@ -42,7 +43,15 @@ const ReactivateClientsForm = () => {
     resolver: zodResolver(resubscribePlanSchema),
     defaultValues,
   });
-  const selectedLocation = form.watch("gymLocation") || "ilorin";
+
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+      if (value.gymLocation) {
+        setSelectedLocation(value.gymLocation);
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [form]);
 
   const branchOption = getBranchOptions(planData, selectedLocation);
   const nameOption = getPlanNameOptions(planData);

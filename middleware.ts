@@ -19,6 +19,7 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isPublicPath) {
+    console.log("omo middleware");
     return NextResponse.next();
   }
 
@@ -71,9 +72,18 @@ export async function middleware(request: NextRequest) {
     if (!userData?.data) {
       throw new Error("No user found", { cause: { status: 401 } });
     }
-    await redis.set(`user:${userId}`, JSON.stringify(userData.data), {
-      ex: CACHE_TTL,
-    });
+    await redis.set(
+      `user:${userId}`,
+      JSON.stringify({
+        firstName: userData.data.firstName,
+        lastName: userData.data.lastName,
+        email: userData.data.email,
+        id: userData.data._id,
+      }),
+      {
+        ex: CACHE_TTL,
+      }
+    );
     return NextResponse.next();
   } catch (error: any) {
     await redis.del(`user:${userId}`);
@@ -81,7 +91,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
     console.error("Middleware error:", error);
-    return NextResponse.next();
+    // return NextResponse.next();
+    return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 }
 

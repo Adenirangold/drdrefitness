@@ -1,3 +1,292 @@
+// "use client";
+// import { memberSchema, memberUpdateSchema } from "@/lib/schema";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import React from "react";
+// import { useForm } from "react-hook-form";
+// import { z } from "zod";
+// import { Form } from "../ui/form";
+// import CustomFormField, { FormFieldType } from "../CustomFormField";
+// import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
+// import { Button } from "../ui/button";
+// import { config } from "@/lib/config";
+// import {
+//   MemberAcceptInviteAction,
+//   memberUpdateAction,
+//   signUpAction,
+// } from "@/lib/actions";
+// import {
+//   getBranchOptions,
+//   getDirtyData,
+//   getLocationOptions,
+//   getPlanNameOptions,
+//   getPlanTypeOptions,
+// } from "@/lib/utils";
+// import { usePlans } from "@/hooks/usePlan";
+// import { useAuthenticatedUser, useUpdateMember } from "@/hooks/useUser";
+// import Spinner from "../Spinner";
+// import SpinnerMini from "../SpinnerMini";
+// type ActionType = "edit" | "sign-up" | "group" | "admin";
+
+// const SignUpForm = ({
+//   type,
+
+//   formParams,
+// }: {
+//   type: ActionType;
+//   formParams?: any;
+// }) => {
+//   let usePlanData;
+//   let planIsLoading;
+//   let planIsError;
+//   let planError;
+//   let useAuthenticatedUserData;
+//   let userIsLoading;
+//   let userIsError;
+//   let userError;
+//   const selectNeeded = type === "admin" || type === "sign-up";
+//   const edit = type === "edit";
+
+//   const { mutate, isPending, isError } = useUpdateMember();
+
+//   if (selectNeeded) {
+//     const { data, isLoading, isError, error } = usePlans();
+
+//     usePlanData = data;
+//     planIsLoading = isLoading;
+//     planIsError = isError;
+//     planError = error;
+//   }
+//   if (edit) {
+//     const { data, isLoading, isError, error } = useAuthenticatedUser();
+//     useAuthenticatedUserData = data;
+//     userIsLoading = isLoading;
+//     userIsError = isError;
+//     userError = error;
+//   }
+
+//   const userData = useAuthenticatedUserData?.data;
+//   const planData = usePlanData?.data || [];
+//   const { id, token } = formParams ?? {};
+
+//   const defaultValues = {
+//     firstName: edit ? userData?.firstName : "",
+//     lastName: edit ? userData?.lastName : "",
+//     email: edit ? userData?.email : "",
+//     password: edit ? "1234567" : "",
+//     phoneNumber: edit ? userData?.phoneNumber : "",
+//     dateOfBirth: edit
+//       ? userData?.dateOfBirth
+//         ? new Date(userData.dateOfBirth)
+//         : undefined
+//       : undefined,
+//     gender: edit ? userData?.gender ?? "male" : "male",
+//     address: {
+//       street: edit ? userData?.address?.street : "",
+//       city: edit ? userData?.address?.city : "",
+//       state: edit ? userData?.address?.state : "",
+//     },
+//     emergencyContact: {
+//       fullName: edit ? userData?.emergencyContact?.fullName : "",
+//       phoneNumber: edit ? userData?.emergencyContact?.phoneNumber : "",
+//       relationship: edit ? userData?.emergencyContact?.relationship : "",
+//     },
+//   };
+
+//   const sigupSchema = edit ? memberUpdateSchema : memberSchema;
+//   const form = useForm<z.infer<typeof sigupSchema>>({
+//     resolver: zodResolver(sigupSchema),
+//     defaultValues,
+//   });
+//   const selectedLocation =
+//     form.watch("currentSubscription.gymLocation") || "ilorin";
+//   const branchOption = getBranchOptions(planData, selectedLocation);
+//   const nameOption = getPlanNameOptions(planData);
+//   const planTypeOption = getPlanTypeOptions(planData);
+//   const locationOption = getLocationOptions(planData);
+//   const isTotalLoading = isPending || planIsLoading || userIsLoading;
+
+//   async function onSubmit(values: z.infer<typeof sigupSchema>) {
+//     console.log(values);
+
+//     if (type === "edit") {
+//       const dirtyFields = form.formState.dirtyFields;
+//       const updateData = getDirtyData(values, dirtyFields);
+
+//       const data = {
+//         ...updateData,
+//       };
+
+//       mutate(data);
+
+//       if (isError) {
+//         return;
+//       }
+//     } else if (type === "group") {
+//       const data = {
+//         ...values,
+//       };
+//       const result = await MemberAcceptInviteAction(data, token, id);
+//       if (result.error) {
+//         console.log(result.error);
+//         return;
+//       }
+//       console.log(result.data?.message);
+//     } else if (type === "sign-up") {
+//       const data = {
+//         ...values,
+//       };
+
+//       const result = await signUpAction(data);
+//       if (result.error) {
+//         console.log(result.error);
+//         return;
+//       }
+//       const paymentType = "signup";
+//       document.cookie = `paymentRedirectType=${paymentType}; path=/; max-age=3600; SameSite=Lax; Secure`;
+
+//       window.location.href = result.data?.authorizationUrl;
+//     }
+//   }
+//   return (
+//     <Form {...form}>
+//       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+//         {selectNeeded && (
+//           <div>
+//             <CustomFormField
+//               fieldType={FormFieldType.SELECT}
+//               placeholder="Choose Your Location"
+//               label="Location"
+//               name={"currentSubscription.gymLocation"}
+//               control={form.control}
+//               items={locationOption}
+//             ></CustomFormField>
+//             <CustomFormField
+//               fieldType={FormFieldType.SELECT}
+//               placeholder="Choose Your Branch"
+//               label="Branch"
+//               name={"currentSubscription.gymBranch"}
+//               control={form.control}
+//               items={branchOption}
+//             ></CustomFormField>
+//             <CustomFormField
+//               fieldType={FormFieldType.SELECT}
+//               label="Plan Type"
+//               name={"currentSubscription.planType"}
+//               placeholder="Choose Your Plan Type"
+//               control={form.control}
+//               items={planTypeOption}
+//             ></CustomFormField>
+//             <CustomFormField
+//               fieldType={FormFieldType.SELECT}
+//               label="Plan Name"
+//               name={"currentSubscription.name"}
+//               placeholder="Choose Your Plan"
+//               control={form.control}
+//               items={nameOption}
+//             ></CustomFormField>
+//           </div>
+//         )}
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="First Name"
+//           name="firstName"
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="Last Name"
+//           name="lastName"
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="Phone Number"
+//           name="phoneNumber"
+//           inputType="number"
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="Email"
+//           name="email"
+//           inputType="email"
+//           disabled={edit}
+//           control={form.control}
+//         ></CustomFormField>
+//         {!edit && (
+//           <CustomFormField
+//             fieldType={FormFieldType.INPUT}
+//             label="Password"
+//             name="password"
+//             inputType="password"
+//             control={form.control}
+//           ></CustomFormField>
+//         )}
+//         <CustomFormField
+//           fieldType={FormFieldType.RADIO}
+//           label="Gender"
+//           name="gender"
+//           control={form.control}
+//           items={GENDER_RADIO_GROUP}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.DATE_PICKER}
+//           control={form.control}
+//           name="dateOfBirth"
+//           label="Date-Of-Birth"
+//           placeholder="mm/dd/yyyy"
+//         />
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="Street"
+//           name={"address.street"}
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="City"
+//           name={"address.city"}
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="State"
+//           name={"address.state"}
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="Full Name"
+//           name={"emergencyContact.fullName"}
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.INPUT}
+//           label="Phone Number"
+//           name={"emergencyContact.phoneNumber"}
+//           inputType="number"
+//           control={form.control}
+//         ></CustomFormField>
+//         <CustomFormField
+//           fieldType={FormFieldType.SELECT}
+//           label="Relationship"
+//           name={"emergencyContact.relationship"}
+//           control={form.control}
+//           items={EMERGENCY_SELECT_GROUP}
+//         ></CustomFormField>
+
+//         <Button type="submit">
+//           {isTotalLoading ? <SpinnerMini></SpinnerMini> : "Submit"}
+//         </Button>
+//       </form>
+//     </Form>
+//   );
+// };
+
+// export default SignUpForm;
+
+// /////////////////////new/////////
+
 "use client";
 import { memberSchema, memberUpdateSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,7 +295,11 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
-import { EMERGENCY_SELECT_GROUP, GENDER_RADIO_GROUP } from "@/constants";
+import {
+  EMERGENCY_SELECT_GROUP,
+  GENDER_RADIO_GROUP,
+  NIGERIA_STATES,
+} from "@/constants";
 import { Button } from "../ui/button";
 import { config } from "@/lib/config";
 import {
@@ -25,202 +318,202 @@ import { usePlans } from "@/hooks/usePlan";
 import { useAuthenticatedUser, useUpdateMember } from "@/hooks/useUser";
 import Spinner from "../Spinner";
 import SpinnerMini from "../SpinnerMini";
+
 type ActionType = "edit" | "sign-up" | "group" | "admin";
 
-const SignUpForm = ({
-  type,
-
-  formParams,
-}: {
+interface SignUpFormProps {
   type: ActionType;
-  formParams?: any;
-}) => {
-  let usePlanData;
-  let planIsLoading;
-  let planIsError;
-  let planError;
-  let useAuthenticatedUserData;
-  let userIsLoading;
-  let userIsError;
-  let userError;
-  const selectNeeded = type === "admin" || type === "sign-up";
-  const edit = type === "edit";
+  formParams?: { id?: string; token?: string };
+}
 
-  const { mutate, isPending, isError } = useUpdateMember();
+const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
+  const isSelectNeeded = type === "admin" || type === "sign-up";
+  const isEditMode = type === "edit";
 
-  if (selectNeeded) {
-    const { data, isLoading, isError, error } = usePlans();
+  const {
+    data: planData,
+    isLoading: planIsLoading,
+    isError: planIsError,
+    error: planError,
+  } = isSelectNeeded
+    ? usePlans()
+    : { data: null, isLoading: false, isError: false, error: null };
 
-    usePlanData = data;
-    planIsLoading = isLoading;
-    planIsError = isError;
-    planError = error;
-  }
-  if (edit) {
-    const { data, isLoading, isError, error } = useAuthenticatedUser();
-    useAuthenticatedUserData = data;
-    userIsLoading = isLoading;
-    userIsError = isError;
-    userError = error;
-  }
+  const {
+    data: userData,
+    isLoading: userIsLoading,
+    isError: userIsError,
+    error: userError,
+  } = isEditMode
+    ? useAuthenticatedUser()
+    : { data: null, isLoading: false, isError: false, error: null };
 
-  const userData = useAuthenticatedUserData?.data;
-  const planData = usePlanData?.data || [];
-  const { id, token } = formParams ?? {};
+  const { mutate, isPending } = useUpdateMember();
 
-  const defaultValues = {
-    firstName: edit ? userData?.firstName : "",
-    lastName: edit ? userData?.lastName : "",
-    email: edit ? userData?.email : "",
-    password: edit ? "1234567" : "",
-    phoneNumber: edit ? userData?.phoneNumber : "",
-    dateOfBirth: edit
-      ? userData?.dateOfBirth
-        ? new Date(userData.dateOfBirth)
-        : undefined
-      : undefined,
-    gender: edit ? userData?.gender ?? "male" : "male",
-    address: {
-      street: edit ? userData?.address?.street : "",
-      city: edit ? userData?.address?.city : "",
-      state: edit ? userData?.address?.state : "",
+  const schema = isEditMode ? memberUpdateSchema : memberSchema;
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      firstName: isEditMode ? userData?.data?.firstName ?? "" : "",
+      lastName: isEditMode ? userData?.data?.lastName ?? "" : "",
+      email: isEditMode ? userData?.data?.email ?? "" : "",
+      password: isEditMode ? "1234567" : "",
+      phoneNumber: isEditMode ? userData?.data?.phoneNumber ?? "" : "",
+      dateOfBirth:
+        isEditMode && userData?.data?.dateOfBirth
+          ? new Date(userData.data.dateOfBirth)
+          : undefined,
+      gender: isEditMode ? userData?.data?.gender ?? "male" : "male",
+      address: {
+        street: isEditMode ? userData?.data?.address?.street ?? "" : "",
+        city: isEditMode ? userData?.data?.address?.city ?? "" : "",
+        state: isEditMode ? userData?.data?.address?.state ?? "" : "",
+      },
+      emergencyContact: {
+        fullName: isEditMode
+          ? userData?.data?.emergencyContact?.fullName ?? ""
+          : "",
+        phoneNumber: isEditMode
+          ? userData?.data?.emergencyContact?.phoneNumber ?? ""
+          : "",
+        relationship: isEditMode
+          ? userData?.data?.emergencyContact?.relationship ?? ""
+          : "",
+      },
     },
-    emergencyContact: {
-      fullName: edit ? userData?.emergencyContact?.fullName : "",
-      phoneNumber: edit ? userData?.emergencyContact?.phoneNumber : "",
-      relationship: edit ? userData?.emergencyContact?.relationship : "",
-    },
-  };
-
-  const sigupSchema = edit ? memberUpdateSchema : memberSchema;
-  const form = useForm<z.infer<typeof sigupSchema>>({
-    resolver: zodResolver(sigupSchema),
-    defaultValues,
   });
+
+  // Form field options
   const selectedLocation =
     form.watch("currentSubscription.gymLocation") || "ilorin";
-  const branchOption = getBranchOptions(planData, selectedLocation);
-  const nameOption = getPlanNameOptions(planData);
-  const planTypeOption = getPlanTypeOptions(planData);
-  const locationOption = getLocationOptions(planData);
-  const isTotalLoading = isPending || planIsLoading || userIsLoading;
+  const branchOptions = getBranchOptions(
+    planData?.data ?? [],
+    selectedLocation
+  );
+  const nameOptions = getPlanNameOptions(planData?.data ?? []);
+  const planTypeOptions = getPlanTypeOptions(planData?.data ?? []);
+  const locationOptions = getLocationOptions(planData?.data ?? []);
 
-  async function onSubmit(values: z.infer<typeof sigupSchema>) {
-    console.log(values);
+  const isLoading = isPending || planIsLoading || userIsLoading;
 
-    if (type === "edit") {
-      const dirtyFields = form.formState.dirtyFields;
-      const updateData = getDirtyData(values, dirtyFields);
-
-      const data = {
-        ...updateData,
-      };
-
-      mutate(data);
-
-      if (isError) {
-        return;
+  // Handle form submission
+  console.log(form.formState.errors);
+  const onSubmit = async (values: z.infer<typeof schema>) => {
+    try {
+      if (isEditMode) {
+        const dirtyFields = form.formState.dirtyFields;
+        const updateData = getDirtyData(values, dirtyFields);
+        await mutate(updateData);
+      } else if (type === "group") {
+        const result = await MemberAcceptInviteAction(
+          values,
+          formParams.token!,
+          formParams.id!
+        );
+        if (result.error) throw new Error(result.error);
+        console.log(result.data?.message);
+      } else if (type === "sign-up") {
+        const result = await signUpAction(values);
+        if (result.error) throw new Error(result.error);
+        document.cookie = `paymentRedirectType=signup; path=/; max-age=3600; SameSite=Lax; Secure`;
+        window.location.href = result.data?.authorizationUrl ?? "/";
       }
-    } else if (type === "group") {
-      const data = {
-        ...values,
-      };
-      const result = await MemberAcceptInviteAction(data, token, id);
-      if (result.error) {
-        console.log(result.error);
-        return;
-      }
-      console.log(result.data?.message);
-    } else if (type === "sign-up") {
-      const data = {
-        ...values,
-      };
-
-      const result = await signUpAction(data);
-      if (result.error) {
-        console.log(result.error);
-        return;
-      }
-      const paymentType = "signup";
-      document.cookie = `paymentRedirectType=${paymentType}; path=/; max-age=3600; SameSite=Lax; Secure`;
-
-      window.location.href = result.data?.authorizationUrl;
+    } catch (error) {
+      console.error("Submission error:", error);
     }
+  };
+
+  // Render error messages if any
+  if (planIsError || userIsError) {
+    return (
+      <div>
+        Error:{" "}
+        {planError?.message || userError?.message || "Something went wrong"}
+      </div>
+    );
   }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        {selectNeeded && (
-          <div>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-6 max-w-2xl mx-auto"
+      >
+        {isSelectNeeded && (
+          <div className="space-y-4">
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               placeholder="Choose Your Location"
               label="Location"
-              name={"currentSubscription.gymLocation"}
+              name="currentSubscription.gymLocation"
               control={form.control}
-              items={locationOption}
-            ></CustomFormField>
+              items={locationOptions}
+            />
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               placeholder="Choose Your Branch"
               label="Branch"
-              name={"currentSubscription.gymBranch"}
+              name="currentSubscription.gymBranch"
               control={form.control}
-              items={branchOption}
-            ></CustomFormField>
+              items={branchOptions}
+            />
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               label="Plan Type"
-              name={"currentSubscription.planType"}
+              name="currentSubscription.planType"
               placeholder="Choose Your Plan Type"
               control={form.control}
-              items={planTypeOption}
-            ></CustomFormField>
+              items={planTypeOptions}
+            />
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               label="Plan Name"
-              name={"currentSubscription.name"}
+              name="currentSubscription.name"
               placeholder="Choose Your Plan"
               control={form.control}
-              items={nameOption}
-            ></CustomFormField>
+              items={nameOptions}
+            />
           </div>
         )}
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="First Name"
-          name="firstName"
-          control={form.control}
-        ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="Last Name"
-          name="lastName"
-          control={form.control}
-        ></CustomFormField>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            label="First Name"
+            name="firstName"
+            control={form.control}
+          />
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            label="Last Name"
+            name="lastName"
+            control={form.control}
+          />
+        </div>
+
         <CustomFormField
           fieldType={FormFieldType.INPUT}
           label="Phone Number"
           name="phoneNumber"
-          inputType="number"
+          inputType="tel"
           control={form.control}
-        ></CustomFormField>
+        />
         <CustomFormField
           fieldType={FormFieldType.INPUT}
           label="Email"
           name="email"
           inputType="email"
-          disabled={edit}
+          disabled={isEditMode}
           control={form.control}
-        ></CustomFormField>
-        {!edit && (
+        />
+        {!isEditMode && (
           <CustomFormField
             fieldType={FormFieldType.INPUT}
             label="Password"
             name="password"
             inputType="password"
             control={form.control}
-          ></CustomFormField>
+          />
         )}
         <CustomFormField
           fieldType={FormFieldType.RADIO}
@@ -228,55 +521,67 @@ const SignUpForm = ({
           name="gender"
           control={form.control}
           items={GENDER_RADIO_GROUP}
-        ></CustomFormField>
+        />
         <CustomFormField
           fieldType={FormFieldType.DATE_PICKER}
           control={form.control}
           name="dateOfBirth"
-          label="Date-Of-Birth"
+          label="Date of Birth"
           placeholder="mm/dd/yyyy"
         />
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="Street"
-          name={"address.street"}
-          control={form.control}
-        ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="City"
-          name={"address.city"}
-          control={form.control}
-        ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="State"
-          name={"address.state"}
-          control={form.control}
-        ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="Full Name"
-          name={"emergencyContact.fullName"}
-          control={form.control}
-        ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
-          label="Phone Number"
-          name={"emergencyContact.phoneNumber"}
-          inputType="number"
-          control={form.control}
-        ></CustomFormField>
-        <CustomFormField
-          fieldType={FormFieldType.SELECT}
-          label="Relationship"
-          name={"emergencyContact.relationship"}
-          control={form.control}
-          items={EMERGENCY_SELECT_GROUP}
-        ></CustomFormField>
 
-        <Button type="submit">
-          {isTotalLoading ? <SpinnerMini></SpinnerMini> : "Submit"}
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Address</h3>
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            label="Street"
+            name="address.street"
+            control={form.control}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CustomFormField
+              fieldType={FormFieldType.INPUT}
+              label="City"
+              name="address.city"
+              control={form.control}
+            />
+
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              label="State"
+              name="address.state"
+              control={form.control}
+              items={NIGERIA_STATES}
+            />
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-lg font-semibold">Emergency Contact</h3>
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            label="Full Name"
+            name="emergencyContact.fullName"
+            control={form.control}
+          />
+          <CustomFormField
+            fieldType={FormFieldType.INPUT}
+            label="Phone Number"
+            name="emergencyContact.phoneNumber"
+            inputType="tel"
+            control={form.control}
+          />
+          <CustomFormField
+            fieldType={FormFieldType.SELECT}
+            label="Relationship"
+            name="emergencyContact.relationship"
+            control={form.control}
+            items={EMERGENCY_SELECT_GROUP}
+          />
+        </div>
+
+        <Button type="submit" disabled={isLoading} className="w-full">
+          {isLoading ? <SpinnerMini /> : "Submit"}
         </Button>
       </form>
     </Form>
