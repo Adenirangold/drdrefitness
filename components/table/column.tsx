@@ -8,6 +8,8 @@ import {
 import { ColumnDef } from "@tanstack/react-table";
 
 import MemberModal from "../MemberModal";
+import { Button } from "../ui/button";
+import { ArrowUpDown } from "lucide-react";
 
 export interface Plan {
   name: string;
@@ -107,21 +109,24 @@ export const columns: ColumnDef<MemberResponse>[] = [
     header: "Reg",
   },
   {
-    accessorKey: "firstName",
-    header: "First Name",
+    // accessorKey: "fullName",
+    accessorFn: (row) =>
+      `${capitalizeFirstLetter(row.firstName)} ${capitalizeFirstLetter(
+        row.lastName
+      )}`,
+    id: "fullName",
+    header: "Name",
     cell: ({ row }) => {
-      const formated = capitalizeFirstLetter(row.original.firstName!);
+      const formatedFirstName = capitalizeFirstLetter(row.original.firstName!);
+      const formatedLastName = capitalizeFirstLetter(row.original.lastName!);
 
-      return <div>{formated}</div>;
+      return <div>{`${formatedFirstName} ${formatedLastName}`}</div>;
     },
-  },
-  {
-    accessorKey: "lastName",
-    header: "Last Name",
-    cell: ({ row }) => {
-      const formated = capitalizeFirstLetter(row.original.lastName!);
-
-      return <div>{formated}</div>;
+    filterFn: (row, columnId, filterValue) => {
+      const fullName = `${capitalizeFirstLetter(
+        row.original.firstName
+      )} ${capitalizeFirstLetter(row.original.lastName)}`;
+      return fullName.toLowerCase().includes(filterValue.toLowerCase());
     },
   },
 
@@ -195,7 +200,18 @@ export const columns: ColumnDef<MemberResponse>[] = [
   },
   {
     accessorKey: "currentSubscription.subscriptionStatus",
-    header: "Status",
+
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Status
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
     cell: ({ row }) => {
       const formated = capitalizeFirstLetter(
         row.original?.currentSubscription?.subscriptionStatus!
