@@ -14,7 +14,7 @@ const publicPaths = [
   "/forgot-password",
 ];
 export async function middleware(request: NextRequest) {
-  console.time("middleware");
+  // console.time("middleware");
   const isPublicPath = publicPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );

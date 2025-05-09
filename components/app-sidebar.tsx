@@ -55,7 +55,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     });
   };
 
-  const navItems = getNavItems(member?.data?.role, member?.data);
+  // const navItems = getNavItems(member?.data?.role, member?.data);
+
+  const navItems = React.useMemo(
+    () => getNavItems(member?.data?.role, member?.data),
+    [member?.data?.role, member?.data]
+  );
 
   const user = {
     role: member?.data?.role,

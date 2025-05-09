@@ -8,10 +8,15 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleMouseEnter = (href: string) => {
+    router.prefetch(href);
+  };
   const { setOpenMobile } = useSidebar();
   return (
     <SidebarGroup>
@@ -20,6 +25,8 @@ export function NavMain({ items }: { items: NavItem[] }) {
           <SidebarMenuItem key={item.title}>
             <Link
               href={item.url}
+              prefetch
+              onMouseEnter={() => handleMouseEnter(item.url)}
               className={`flex items-center gap-5 `}
               onClick={() => setOpenMobile(false)}
             >

@@ -1,7 +1,7 @@
 "use client";
 import { resubscribePlanSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
@@ -53,10 +53,24 @@ const ReactivateClientsForm = () => {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  const branchOption = getBranchOptions(planData, selectedLocation);
-  const nameOption = getPlanNameOptions(planData);
-  const planTypeOption = getPlanTypeOptions(planData);
-  const locationOption = getLocationOptions(planData);
+  // const branchOption = getBranchOptions(planData, selectedLocation);
+  // const nameOption = getPlanNameOptions(planData);
+  // const planTypeOption = getPlanTypeOptions(planData);
+  // const locationOption = getLocationOptions(planData);
+
+  const branchOption = useMemo(
+    () => getBranchOptions(planData, selectedLocation),
+    [planData, selectedLocation]
+  );
+  const nameOption = useMemo(() => getPlanNameOptions(planData), [planData]);
+  const planTypeOption = useMemo(
+    () => getPlanTypeOptions(planData),
+    [planData]
+  );
+  const locationOption = useMemo(
+    () => getLocationOptions(planData),
+    [planData]
+  );
 
   async function onSubmit(values: z.infer<typeof resubscribePlanSchema>) {
     console.log(values);

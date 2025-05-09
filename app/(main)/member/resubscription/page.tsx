@@ -13,7 +13,7 @@ export default async function page() {
     await queryClient.prefetchQuery({
       queryKey: ["plans"],
       queryFn: getAllPlanAction,
-      staleTime: 1000 * 60 * 10,
+      staleTime: 1000 * 60 * 60,
     });
   } catch (error: any) {
     console.error("Failed to prefetch plans:", error.message);

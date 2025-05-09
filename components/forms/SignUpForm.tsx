@@ -94,7 +94,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
     },
   });
 
-  // Form field options
   const selectedLocation =
     form.watch("currentSubscription.gymLocation") || "ilorin";
   const branchOptions = getBranchOptions(
@@ -107,8 +106,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
 
   const isLoading = isPending || planIsLoading || userIsLoading;
 
-  // Handle form submission
-  console.log(form.formState.errors);
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
       if (isEditMode) {
@@ -134,7 +131,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
     }
   };
 
-  // Render error messages if any
   if (planIsError || userIsError) {
     return (
       <div>
