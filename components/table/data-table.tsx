@@ -9,6 +9,7 @@ import {
   getFilteredRowModel,
   SortingState,
   getSortedRowModel,
+  getPaginationRowModel,
 } from "@tanstack/react-table";
 
 import {
@@ -21,6 +22,7 @@ import {
 } from "@/components/ui/table";
 import { useState } from "react";
 import { Input } from "../ui/input";
+import { DataTablePagination } from "./TablePagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -42,6 +44,8 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+
     state: {
       columnFilters,
       sorting,
@@ -126,6 +130,7 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
+      <DataTablePagination table={table}></DataTablePagination>
     </>
   );
 }

@@ -38,6 +38,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       case "director":
         navItems = DIRECTOR_NAV;
         break;
+
       default:
         return [];
     }

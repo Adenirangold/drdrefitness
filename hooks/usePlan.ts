@@ -15,7 +15,9 @@ export function usePlans() {
   return useQuery({
     queryKey: ["plans"],
     queryFn: getAllPlanAction,
-    refetchInterval: 900000,
+    staleTime: 1000 * 60 * 30,
+
+    refetchInterval: 9000000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
   });

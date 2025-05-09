@@ -1,10 +1,13 @@
 import MemberList from "@/components/MemberList";
-import React from "react";
+import Spinner from "@/components/Spinner";
+import React, { Suspense } from "react";
 
 const page = () => {
   return (
     <div>
-      <MemberList></MemberList>
+      <Suspense fallback={<Spinner></Spinner>}>
+        <MemberList></MemberList>
+      </Suspense>
     </div>
   );
 };

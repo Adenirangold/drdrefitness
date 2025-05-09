@@ -2,6 +2,7 @@ import React from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
 
 const Header = () => {
   return (

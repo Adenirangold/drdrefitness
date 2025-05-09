@@ -2,12 +2,14 @@
 import Spinner from "@/components/Spinner";
 import SubscriptionList from "@/components/SubscriptionList";
 import { useAuthenticatedUser } from "@/hooks/useUser";
-import React from "react";
+import React, { Suspense } from "react";
 
 const page = () => {
   return (
     <div>
-      <SubscriptionList></SubscriptionList>
+      <Suspense fallback={<Spinner></Spinner>}>
+        <SubscriptionList></SubscriptionList>
+      </Suspense>
     </div>
   );
 };

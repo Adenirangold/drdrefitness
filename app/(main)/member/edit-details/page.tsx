@@ -1,11 +1,19 @@
 import SignUpForm from "@/components/forms/SignUpForm";
+// const SignUpForm = dynamic(() => import("@/components/forms/SignUpForm"), {
+//   ssr: false,
+//   loading: () => <Spinner />,
+// });
+import Spinner from "@/components/Spinner";
+import dynamic from "next/dynamic";
 
-import React from "react";
+import React, { Suspense } from "react";
 
-const page = async () => {
+const page = () => {
   return (
     <div>
-      <SignUpForm type="edit"></SignUpForm>
+      <Suspense fallback={<Spinner></Spinner>}>
+        <SignUpForm type="edit"></SignUpForm>
+      </Suspense>
     </div>
   );
 };

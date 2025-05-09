@@ -1,10 +1,13 @@
 import EmailOnlyForm from "@/components/forms/EmailOnlyForm";
-import React from "react";
+import Spinner from "@/components/Spinner";
+import React, { Suspense } from "react";
 
 const page = () => {
   return (
     <div>
-      <EmailOnlyForm type="invite-member"></EmailOnlyForm>
+      <Suspense fallback={<Spinner></Spinner>}>
+        <EmailOnlyForm type="invite-member"></EmailOnlyForm>
+      </Suspense>
     </div>
   );
 };

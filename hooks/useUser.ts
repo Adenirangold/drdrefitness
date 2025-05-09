@@ -19,9 +19,11 @@ export function useAuthenticatedUser() {
   return useQuery({
     queryKey: ["user"],
     queryFn: getAuthenticatedUser,
+    staleTime: 1000 * 60 * 30,
     refetchInterval: 900000,
     refetchOnMount: false,
     refetchOnWindowFocus: false,
+    // initialData: dehydratedState?.queries?.find(q => q.queryKey[0] === "user")?.state?.data
   });
 }
 

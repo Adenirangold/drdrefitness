@@ -2,6 +2,8 @@ import { getAllPlanAction } from "@/lib/actions";
 import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { HydrationBoundary } from "@tanstack/react-query";
 import ReactivateClientsForm from "@/components/forms/ReactivateClientsForm";
+import { Suspense } from "react";
+import Spinner from "@/components/Spinner";
 
 export default async function page() {
   const queryClient = new QueryClient();
@@ -21,7 +23,9 @@ export default async function page() {
 
   return (
     <HydrationBoundary state={dehydratedState}>
-      <ReactivateClientsForm />
+      <Suspense fallback={<Spinner></Spinner>}>
+        <ReactivateClientsForm />
+      </Suspense>
     </HydrationBoundary>
   );
 }

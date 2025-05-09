@@ -1,7 +1,6 @@
-import { redis } from "@/lib/redis";
 import React from "react";
 
-const page = async () => {
+const page = () => {
   return <div>dashboradpage</div>;
 };
 

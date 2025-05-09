@@ -27,6 +27,7 @@ export default async function MainLayout({
     });
   } catch (error: any) {
     console.error("Failed to prefetch user:", error);
+    redirect("/sign-in");
   }
 
   const dehydratedState = dehydrate(queryClient);

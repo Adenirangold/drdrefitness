@@ -3,7 +3,7 @@ import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 import { redis } from "./lib/redis";
 
-const CACHE_TTL = 5 * 60;
+const CACHE_TTL = 60 * 60;
 
 const publicPaths = [
   "/sign-in",
@@ -14,6 +14,7 @@ const publicPaths = [
   "/forgot-password",
 ];
 export async function middleware(request: NextRequest) {
+  console.time("middleware");
   const isPublicPath = publicPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
@@ -26,6 +27,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("authToken")?.value;
 
   if (!token) {
+    console.timeEnd("middleware");
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
@@ -46,7 +48,25 @@ export async function middleware(request: NextRequest) {
 
     if (decoded?.payload?.exp! < Date.now() / 1000) {
       await redis.del(`user:${userId}`);
+      console.timeEnd("middleware");
       return NextResponse.redirect(new URL("/sign-in", request.url));
+    }
+
+    if (decoded.payload.email && decoded.payload.id) {
+      await redis.set(
+        `user:${userId}`,
+        JSON.stringify({
+          email: decoded.payload.email,
+          id: decoded.payload.id,
+        }),
+        {
+          ex: CACHE_TTL,
+        }
+      );
+      // console.timeEnd("middleware");
+      // console.log("json");
+
+      return NextResponse.next();
     }
 
     const response = await fetch(
@@ -75,8 +95,6 @@ export async function middleware(request: NextRequest) {
     await redis.set(
       `user:${userId}`,
       JSON.stringify({
-        firstName: userData.data.firstName,
-        lastName: userData.data.lastName,
         email: userData.data.email,
         id: userData.data._id,
       }),
@@ -84,6 +102,9 @@ export async function middleware(request: NextRequest) {
         ex: CACHE_TTL,
       }
     );
+    console.timeEnd("middleware");
+    console.log("used database");
+
     return NextResponse.next();
   } catch (error: any) {
     await redis.del(`user:${userId}`);
