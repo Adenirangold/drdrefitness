@@ -20,14 +20,13 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isPublicPath) {
-    console.log("omo middleware");
     return NextResponse.next();
   }
 
   const token = request.cookies.get("authToken")?.value;
 
   if (!token) {
-    console.timeEnd("middleware");
+    // console.timeEnd("middleware");
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
@@ -48,7 +47,7 @@ export async function middleware(request: NextRequest) {
 
     if (decoded?.payload?.exp! < Date.now() / 1000) {
       await redis.del(`user:${userId}`);
-      console.timeEnd("middleware");
+      // console.timeEnd("middleware");
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
@@ -112,7 +111,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
     console.error("Middleware error:", error);
-    // return NextResponse.next();
+
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 }

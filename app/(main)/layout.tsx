@@ -23,11 +23,13 @@ export default async function MainLayout({
     await queryClient.prefetchQuery({
       queryKey: ["user"],
       queryFn: getAuthenticatedUser,
-      staleTime: 1000 * 60 * 10,
+      staleTime: 1000 * 60 * 30,
     });
   } catch (error: any) {
     console.error("Failed to prefetch user:", error);
-    redirect("/sign-in");
+    if (error.status === 401) {
+      return redirect("/sign-in");
+    }
   }
 
   const dehydratedState = dehydrate(queryClient);
