@@ -14,7 +14,7 @@ const publicPaths = [
   "/forgot-password",
 ];
 export async function middleware(request: NextRequest) {
-  // console.time("middleware");
+  console.time("ware");
   const isPublicPath = publicPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("authToken")?.value;
 
   if (!token) {
-    // console.timeEnd("middleware");
+    console.timeEnd("ware");
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
@@ -47,7 +47,7 @@ export async function middleware(request: NextRequest) {
 
     if (decoded?.payload?.exp! < Date.now() / 1000) {
       await redis.del(`user:${userId}`);
-      // console.timeEnd("middleware");
+      console.timeEnd("ware");
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
@@ -62,8 +62,7 @@ export async function middleware(request: NextRequest) {
           ex: CACHE_TTL,
         }
       );
-      // console.timeEnd("middleware");
-      // console.log("json");
+      console.timeEnd("ware");
 
       return NextResponse.next();
     }
@@ -101,7 +100,7 @@ export async function middleware(request: NextRequest) {
         ex: CACHE_TTL,
       }
     );
-    console.timeEnd("middleware");
+    console.timeEnd("ware");
     console.log("used database");
 
     return NextResponse.next();

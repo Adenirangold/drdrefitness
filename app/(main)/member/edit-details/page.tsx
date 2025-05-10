@@ -1,12 +1,11 @@
-import SignUpForm from "@/components/forms/SignUpForm";
-// const SignUpForm = dynamic(() => import("@/components/forms/SignUpForm"), {
-//   ssr: false,
-//   loading: () => <Spinner />,
-// });
+// import SignUpForm from "@/components/forms/SignUpForm";
 import Spinner from "@/components/Spinner";
 import dynamic from "next/dynamic";
 
 import React, { Suspense } from "react";
+const SignUpForm = dynamic(() => import("@/components/forms/SignUpForm"), {
+  loading: () => <Spinner />,
+});
 
 const page = () => {
   return (

@@ -11,6 +11,9 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Suspense } from "react";
 import Spinner from "@/components/Spinner";
 import { redirect } from "next/navigation";
+import { LoadingProvider } from "@/context/LoadingContext";
+import { FullScreenSpinner } from "@/components/FullScreenLoader";
+import { ClientWrapper } from "@/components/ClientWrapper";
 
 export default async function MainLayout({
   children,
@@ -38,13 +41,20 @@ export default async function MainLayout({
 
   return (
     <HydrationBoundary state={dehydratedState}>
-      <SidebarProvider defaultOpen={defaultOpen}>
-        <AppSidebar />
-        <SidebarInset>
-          <Header></Header>
-          <Suspense fallback={<Spinner />}>{children}</Suspense>
-        </SidebarInset>
-      </SidebarProvider>
+      <LoadingProvider>
+        <SidebarProvider defaultOpen={defaultOpen}>
+          <AppSidebar />
+          <SidebarInset>
+            <Header></Header>
+            <ClientWrapper>
+              <Suspense fallback={<Spinner />}>{children}</Suspense>
+            </ClientWrapper>
+            {/* <FullScreenSpinner>
+              <Suspense fallback={<Spinner />}>{children}</Suspense>
+            </FullScreenSpinner> */}
+          </SidebarInset>
+        </SidebarProvider>
+      </LoadingProvider>
     </HydrationBoundary>
   );
 }
