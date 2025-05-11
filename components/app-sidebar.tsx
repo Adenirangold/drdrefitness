@@ -11,15 +11,18 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  useSidebar,
 } from "@/components/ui/sidebar";
 import { useAuthenticatedUser } from "@/hooks/useUser";
 import Spinner from "./Spinner";
 import { capitalizeAndConcat, capitalizeFirstLetters } from "@/lib/utils";
 import { NavFooter } from "./nav-footer";
-import SidebarSkeletons from "./skeletons/sidebar-skeletons";
 import { ADMIN_NAV, DIRECTOR_NAV, MEMBER_NAV } from "@/constants";
+import { XIcon } from "lucide-react";
+import { Button } from "./ui/button";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { isMobile, setOpenMobile } = useSidebar();
   const { data: member, isLoading, isError, error } = useAuthenticatedUser();
 
   if (isLoading) {
@@ -55,8 +58,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     });
   };
 
-  // const navItems = getNavItems(member?.data?.role, member?.data);
-
   const navItems = React.useMemo(
     () => getNavItems(member?.data?.role, member?.data),
     [member?.data?.role, member?.data]
@@ -73,7 +74,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
+      <SidebarHeader className="relative">
+        {isMobile && (
+          <Button
+            onClick={() => setOpenMobile(false)}
+            variant="ghost"
+            className="absolute right-1 z-50 top-1 h-7 w-7 p-0 border border-black-300 bg-white hover:bg-gray-100 rounded-md"
+            aria-label="Close sidebar"
+          >
+            <XIcon className="h-5 w-5" />
+          </Button>
+        )}
         <NavUser user={user} />
       </SidebarHeader>
       <SidebarContent>
