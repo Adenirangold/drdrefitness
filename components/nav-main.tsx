@@ -10,9 +10,8 @@ import {
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
-import { FullScreenSpinner } from "./FullScreenLoader";
+
 import { useLoading } from "@/context/LoadingContext";
-import { set } from "zod";
 
 export function NavMain({ items }: { items: NavItem[] }) {
   const pathname = usePathname();

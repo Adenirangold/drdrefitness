@@ -12,7 +12,6 @@ import { Suspense } from "react";
 import Spinner from "@/components/Spinner";
 import { redirect } from "next/navigation";
 import { LoadingProvider } from "@/context/LoadingContext";
-import { FullScreenSpinner } from "@/components/FullScreenLoader";
 import { ClientWrapper } from "@/components/ClientWrapper";
 
 export default async function MainLayout({
@@ -49,9 +48,6 @@ export default async function MainLayout({
             <ClientWrapper>
               <Suspense fallback={<Spinner />}>{children}</Suspense>
             </ClientWrapper>
-            {/* <FullScreenSpinner>
-              <Suspense fallback={<Spinner />}>{children}</Suspense>
-            </FullScreenSpinner> */}
           </SidebarInset>
         </SidebarProvider>
       </LoadingProvider>

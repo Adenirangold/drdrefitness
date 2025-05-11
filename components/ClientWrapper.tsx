@@ -37,9 +37,9 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
   console.log("ClientWrapper render:", { loadingHref });
 
   return (
-    <>
+    <div className="relative h-full w-full">
       {children}
       {loadingHref && <Spinner />}
-    </>
+    </div>
   );
 }
