@@ -29,6 +29,7 @@ import { usePlans } from "@/hooks/usePlan";
 import { useAuthenticatedUser, useUpdateMember } from "@/hooks/useUser";
 import Spinner from "../Spinner";
 import SpinnerMini from "../SpinnerMini";
+import { useToast } from "@/hooks/use-toast";
 
 type ActionType = "edit" | "sign-up" | "group" | "admin";
 
@@ -38,6 +39,8 @@ interface SignUpFormProps {
 }
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
+  const { toast } = useToast();
+
   const isSelectNeeded = type === "admin" || type === "sign-up";
   const isEditMode = type === "edit";
 
@@ -118,11 +121,25 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
           formParams.token!,
           formParams.id!
         );
-        if (result.error) throw new Error(result.error);
-        console.log(result.data?.message);
+        if (result.error) {
+          console.log(result.data?.message);
+          toast({
+            title: "Error",
+            description: result.data?.message,
+            variant: "destructive",
+          });
+          throw new Error(result.error);
+        }
       } else if (type === "sign-up") {
         const result = await signUpAction(values);
-        if (result.error) throw new Error(result.error);
+        if (result.error) {
+          toast({
+            title: "Error",
+            description: result.error,
+            variant: "destructive",
+          });
+          throw new Error(result.error);
+        }
         document.cookie = `paymentRedirectType=signup; path=/; max-age=3600; SameSite=Lax; Secure`;
         window.location.href = result.data?.authorizationUrl ?? "/";
       }

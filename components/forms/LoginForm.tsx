@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { loginAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import SpinnerMini from "../SpinnerMini";
+import { useToast } from "@/hooks/use-toast";
 
 const defaultValues = {
   email: "",
@@ -17,6 +18,7 @@ const defaultValues = {
 };
 
 const LoginForm = () => {
+  const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,7 +35,11 @@ const LoginForm = () => {
 
     const result = await loginAction(data);
     if (result?.error) {
-      console.log(result.error);
+      toast({
+        title: "Login Failed",
+        description: result.error,
+        variant: "destructive",
+      });
       setIsLoading(false);
       return;
     }
