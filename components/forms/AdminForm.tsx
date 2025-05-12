@@ -1,13 +1,12 @@
 "use client";
 import { adminSchema, adminSchemaUpdate, loginSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
-import { loginAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import SpinnerMini from "../SpinnerMini";
 import { getBranches, getDirtyData, locationItems } from "@/lib/utils";
@@ -41,19 +40,24 @@ const AdminForm = ({
   });
 
   const selectedLocation = form.watch("adminLocation.location") || "ilorin";
-  const branchesItems = getBranches(selectedLocation);
-  useEffect(() => {
-    if (editAdminMutation.isSuccess) {
-      if (closeModal) {
-        closeModal();
-      }
-    }
-  }, [editAdminMutation.isSuccess, closeModal]);
+  const branchesItems = useMemo(
+    () => getBranches(selectedLocation),
+    [selectedLocation]
+  );
+
   useEffect(() => {
     if (addAdminMutation.isSuccess) {
       router.push("/director/manage-admins");
     }
-  }, [addAdminMutation.isSuccess]);
+    if (editAdminMutation.isSuccess && closeModal) {
+      closeModal();
+    }
+  }, [
+    addAdminMutation.isSuccess,
+    editAdminMutation.isSuccess,
+    router,
+    closeModal,
+  ]);
 
   async function onSubmit(values: z.infer<typeof adminFormSchema>) {
     // console.log(values);

@@ -2,8 +2,8 @@
 
 import * as React from "react";
 
-import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { NavMain } from "@/components/NavMain";
+import { NavUser } from "@/components/NavUser";
 
 import {
   Sidebar,
@@ -16,7 +16,7 @@ import {
 import { useAuthenticatedUser } from "@/hooks/useUser";
 import Spinner from "./Spinner";
 import { capitalizeAndConcat, capitalizeFirstLetters } from "@/lib/utils";
-import { NavFooter } from "./nav-footer";
+import { NavFooter } from "./NavFooter";
 import { ADMIN_NAV, DIRECTOR_NAV, MEMBER_NAV } from "@/constants";
 import { XIcon } from "lucide-react";
 import { Button } from "./ui/button";

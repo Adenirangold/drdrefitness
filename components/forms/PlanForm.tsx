@@ -5,7 +5,7 @@ import {
   resubscribePlanSchema,
 } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
@@ -39,18 +39,13 @@ const PlanForm = ({
   const planFormSchema = edit ? planUpdateSchema : planSchema;
 
   useEffect(() => {
-    if (editMutation.isSuccess) {
-      if (closeModal) {
-        closeModal();
-      }
-    }
-  }, [editMutation.isSuccess, closeModal]);
-
-  useEffect(() => {
     if (isSuccess) {
       router.push("/director/manage-plans");
     }
-  }, [isSuccess]);
+    if (editMutation.isSuccess && closeModal) {
+      closeModal();
+    }
+  }, [isSuccess, editMutation.isSuccess, router, closeModal]);
 
   const defaultValues = {
     planType: edit
@@ -67,7 +62,11 @@ const PlanForm = ({
     defaultValues,
   });
   const selectedLocation = form.watch("gymLocation") || "ilorin";
-  const branchesItems = getBranches(selectedLocation);
+
+  const branchesItems = useMemo(
+    () => getBranches(selectedLocation),
+    [selectedLocation]
+  );
 
   async function onSubmit(values: z.infer<typeof planFormSchema>) {
     console.log(values);
@@ -118,11 +117,12 @@ const PlanForm = ({
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <CustomFormField
           fieldType={FormFieldType.SELECT}
-          label="Plan Name"
+          label="Plan"
           name={"name"}
           placeholder="Choose Your Plan"
           control={form.control}
           items={planTypeItems}
+          disabled={edit}
         ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.SELECT}
@@ -131,6 +131,7 @@ const PlanForm = ({
           name={"gymLocation"}
           control={form.control}
           items={locationItems}
+          disabled={edit}
         ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.SELECT}
@@ -139,6 +140,7 @@ const PlanForm = ({
           name={"gymBranch"}
           control={form.control}
           items={branchesItems}
+          disabled={edit}
         ></CustomFormField>
         <CustomFormField
           fieldType={FormFieldType.SELECT}
@@ -147,6 +149,7 @@ const PlanForm = ({
           placeholder="Choose Plan Type"
           control={form.control}
           items={PlanTypeItems}
+          disabled={edit}
         ></CustomFormField>
 
         <CustomFormField
@@ -159,7 +162,8 @@ const PlanForm = ({
           fieldType={FormFieldType.TEXTAREA}
           name="benefits"
           control={form.control}
-          label="Benefit"
+          label="Benefits (comma-separated)"
+          placeholder="e.g., Gym access, Personal trainer, Pool"
         ></CustomFormField>
 
         <Button type="submit">

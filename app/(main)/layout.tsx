@@ -4,7 +4,7 @@ import { QueryClient, dehydrate } from "@tanstack/react-query";
 import { HydrationBoundary } from "@tanstack/react-query";
 import { cookies } from "next/headers";
 
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppSidebar } from "@/components/AppSidebar";
 import Header from "@/components/Header";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
