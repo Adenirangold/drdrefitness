@@ -113,12 +113,17 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
-      if (isEditMode) {
+      if (type === "edit") {
         const dirtyFields = form.formState.dirtyFields;
         const updateData = getDirtyData(values, dirtyFields);
         updateMemberMutation.mutate(updateData);
         if (updateMemberMutation.isError) {
-          throw new Error(updateMemberMutation.error.message);
+          toast({
+            title: "Error",
+            description: updateMemberMutation.error.message,
+            variant: "destructive",
+          });
+          return;
         }
         toast({
           title: "Success",
@@ -133,7 +138,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
         );
         if (result.error) {
           setIsLoading(false);
-          throw new Error(result.error);
+          toast({
+            title: "Error",
+            description: result.error,
+            variant: "destructive",
+          });
+          return;
         }
 
         setIsLoading(false);
@@ -148,7 +158,12 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
         const result = await signUpAction(values);
         if (result.error) {
           setIsLoading(false);
-          throw new Error(result.error);
+          toast({
+            title: "Error",
+            description: result.error,
+            variant: "destructive",
+          });
+          return;
         }
         document.cookie = `paymentRedirectType=signup; path=/; max-age=3600; SameSite=Lax; Secure`;
         setIsLoading(false);
@@ -158,7 +173,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
       console.error("Submission error:", error);
       toast({
         title: "Error",
-        description: error.message || "Something went wrong, please try again.",
+        description: "Something went wrong, please try again.",
         variant: "destructive",
       });
     }

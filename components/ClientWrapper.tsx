@@ -7,7 +7,7 @@ import { useLoading } from "@/context/LoadingContext";
 import Spinner from "./Spinner";
 
 export function ClientWrapper({ children }: { children: React.ReactNode }) {
-  const { loadingHref, setLoadingHref } = useLoading();
+  const { loadingHref, setLoadingHref, isLoading, setIsLoading } = useLoading();
   const pathname = usePathname();
 
   // Normalize URLs

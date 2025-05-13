@@ -26,6 +26,7 @@ export default async function PaymentSuccess({
     switch (paymentType) {
       case "signup":
         result = await verifyPaymentAfterSignupAction(reference);
+
         redirectUrl = "/sign-in";
         break;
       case "reactivate":
@@ -40,6 +41,7 @@ export default async function PaymentSuccess({
 
     if (result?.error) {
       console.log(result?.error);
+
       return;
     }
 

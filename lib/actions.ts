@@ -66,6 +66,8 @@ export const verifyPaymentAfterSignupAction = async (reference: string) => {
       },
     };
   } catch (error) {
+    console.log(error);
+
     return {
       error:
         "Payment verification failed, An unexpected error occurred. Please try again later",
@@ -114,8 +116,15 @@ export const logOutAction = async () => {
   try {
     const cookieStore = await cookies();
     cookieStore.delete("authToken");
+    return {
+      data: {
+        message: "success",
+      },
+    };
   } catch (error) {
-    console.log(error);
+    return {
+      error: "Something went wrong. Please try again later",
+    };
   }
 };
 
