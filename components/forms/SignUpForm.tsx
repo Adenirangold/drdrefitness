@@ -12,12 +12,7 @@ import {
   NIGERIA_STATES,
 } from "@/constants";
 import { Button } from "../ui/button";
-import { config } from "@/lib/config";
-import {
-  MemberAcceptInviteAction,
-  memberUpdateAction,
-  signUpAction,
-} from "@/lib/actions";
+import { MemberAcceptInviteAction, signUpAction } from "@/lib/actions";
 import {
   getBranchOptions,
   getDirtyData,
@@ -27,9 +22,10 @@ import {
 } from "@/lib/utils";
 import { usePlans } from "@/hooks/usePlan";
 import { useAuthenticatedUser, useUpdateMember } from "@/hooks/useUser";
-import Spinner from "../Spinner";
 import SpinnerMini from "../SpinnerMini";
 import { useToast } from "@/hooks/use-toast";
+import { useLoading } from "@/context/LoadingContext";
+import { useRouter } from "next/navigation";
 
 type ActionType = "edit" | "sign-up" | "group" | "admin";
 
@@ -40,6 +36,8 @@ interface SignUpFormProps {
 
 const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
   const { toast } = useToast();
+  const router = useRouter();
+  const { isLoading, setIsLoading } = useLoading();
 
   const isSelectNeeded = type === "admin" || type === "sign-up";
   const isEditMode = type === "edit";
@@ -62,7 +60,7 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
     ? useAuthenticatedUser()
     : { data: null, isLoading: false, isError: false, error: null };
 
-  const { mutate, isPending } = useUpdateMember();
+  const updateMemberMutation = useUpdateMember();
 
   const schema = isEditMode ? memberUpdateSchema : memberSchema;
   const form = useForm<z.infer<typeof schema>>({
@@ -107,55 +105,64 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
   const planTypeOptions = getPlanTypeOptions(planData?.data ?? []);
   const locationOptions = getLocationOptions(planData?.data ?? []);
 
-  const isLoading = isPending || planIsLoading || userIsLoading;
+  const dataIsLoading =
+    updateMemberMutation.isPending ||
+    planIsLoading ||
+    userIsLoading ||
+    isLoading;
 
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
       if (isEditMode) {
         const dirtyFields = form.formState.dirtyFields;
         const updateData = getDirtyData(values, dirtyFields);
-        await mutate(updateData);
+        updateMemberMutation.mutate(updateData);
+        if (updateMemberMutation.isError) {
+          throw new Error(updateMemberMutation.error.message);
+        }
+        toast({
+          title: "Success",
+          description: "Your changes were saved successfully.",
+        });
       } else if (type === "group") {
+        setIsLoading(true);
         const result = await MemberAcceptInviteAction(
           values,
           formParams.token!,
           formParams.id!
         );
         if (result.error) {
-          console.log(result.data?.message);
-          toast({
-            title: "Error",
-            description: result.data?.message,
-            variant: "destructive",
-          });
+          setIsLoading(false);
           throw new Error(result.error);
         }
+
+        setIsLoading(false);
+        router.replace("/sign-in");
+        toast({
+          title: "Success",
+          description:
+            "Inviation accepted successfully. Please sign in with the email and password you used to register.",
+        });
       } else if (type === "sign-up") {
+        setIsLoading(true);
         const result = await signUpAction(values);
         if (result.error) {
-          toast({
-            title: "Error",
-            description: result.error,
-            variant: "destructive",
-          });
+          setIsLoading(false);
           throw new Error(result.error);
         }
         document.cookie = `paymentRedirectType=signup; path=/; max-age=3600; SameSite=Lax; Secure`;
+        setIsLoading(false);
         window.location.href = result.data?.authorizationUrl ?? "/";
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Submission error:", error);
+      toast({
+        title: "Error",
+        description: error.message || "Something went wrong, please try again.",
+        variant: "destructive",
+      });
     }
   };
-
-  if (planIsError || userIsError) {
-    return (
-      <div>
-        Error:{" "}
-        {planError?.message || userError?.message || "Something went wrong"}
-      </div>
-    );
-  }
 
   return (
     <Form {...form}>
@@ -163,43 +170,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
         onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6 max-w-2xl mx-auto"
       >
-        {isSelectNeeded && (
-          <div className="space-y-4">
-            <CustomFormField
-              fieldType={FormFieldType.SELECT}
-              placeholder="Choose Your Location"
-              label="Location"
-              name="currentSubscription.gymLocation"
-              control={form.control}
-              items={locationOptions}
-            />
-            <CustomFormField
-              fieldType={FormFieldType.SELECT}
-              placeholder="Choose Your Branch"
-              label="Branch"
-              name="currentSubscription.gymBranch"
-              control={form.control}
-              items={branchOptions}
-            />
-            <CustomFormField
-              fieldType={FormFieldType.SELECT}
-              label="Plan Type"
-              name="currentSubscription.planType"
-              placeholder="Choose Your Plan Type"
-              control={form.control}
-              items={planTypeOptions}
-            />
-            <CustomFormField
-              fieldType={FormFieldType.SELECT}
-              label="Plan Name"
-              name="currentSubscription.name"
-              placeholder="Choose Your Plan"
-              control={form.control}
-              items={nameOptions}
-            />
-          </div>
-        )}
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <CustomFormField
             fieldType={FormFieldType.INPUT}
@@ -217,13 +187,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
 
         <CustomFormField
           fieldType={FormFieldType.INPUT}
-          label="Phone Number"
-          name="phoneNumber"
-          inputType="tel"
-          control={form.control}
-        />
-        <CustomFormField
-          fieldType={FormFieldType.INPUT}
           label="Email"
           name="email"
           inputType="email"
@@ -239,6 +202,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
             control={form.control}
           />
         )}
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Phone Number"
+          name="phoneNumber"
+          inputType="tel"
+          control={form.control}
+        />
         <CustomFormField
           fieldType={FormFieldType.RADIO}
           label="Gender"
@@ -304,8 +274,47 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
           />
         </div>
 
-        <Button type="submit" disabled={isLoading} className="w-full">
-          {isLoading ? <SpinnerMini /> : "Submit"}
+        {isSelectNeeded && (
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Select Plan</h3>
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              placeholder="Choose Your Location"
+              label="Location"
+              name="currentSubscription.gymLocation"
+              control={form.control}
+              items={locationOptions}
+            />
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              placeholder="Choose Your Branch"
+              label="Branch"
+              name="currentSubscription.gymBranch"
+              control={form.control}
+              items={branchOptions}
+            />
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              label="Plan Type"
+              name="currentSubscription.planType"
+              placeholder="Choose Your Plan Type"
+              control={form.control}
+              items={planTypeOptions}
+            />
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              label="Plan Name"
+              name="currentSubscription.name"
+              placeholder="Choose Your Plan"
+              control={form.control}
+              items={nameOptions}
+            />
+          </div>
+        )}
+
+        <Button type="submit" disabled={dataIsLoading} className="w-full">
+          Submit
+          {dataIsLoading && <SpinnerMini />}
         </Button>
       </form>
     </Form>

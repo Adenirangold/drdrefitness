@@ -3,7 +3,6 @@
 import { config } from "@/lib/config";
 
 import { fetchData } from "./utils";
-import useAuthStore from "@/app/stores/authStore";
 import { cookies } from "next/headers";
 
 // ////////////////////////AUTHENICATIONS//////////////////////////////
