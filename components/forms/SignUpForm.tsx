@@ -116,18 +116,21 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
       if (type === "edit") {
         const dirtyFields = form.formState.dirtyFields;
         const updateData = getDirtyData(values, dirtyFields);
-        updateMemberMutation.mutate(updateData);
-        if (updateMemberMutation.isError) {
-          toast({
-            title: "Error",
-            description: updateMemberMutation.error.message,
-            variant: "destructive",
-          });
-          return;
-        }
-        toast({
-          title: "Success",
-          description: "Your changes were saved successfully.",
+        updateMemberMutation.mutate(updateData, {
+          onSuccess: () => {
+            toast({
+              title: "Success",
+              description: "Your changes were saved successfully",
+            });
+          },
+          onError: (error) => {
+            toast({
+              title: "Error",
+              description: error.message,
+              variant: "destructive",
+            });
+            return;
+          },
         });
       } else if (type === "group") {
         setIsLoading(true);

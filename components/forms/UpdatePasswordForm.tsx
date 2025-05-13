@@ -11,6 +11,8 @@ import { memberUpdatePasswordAction, ResetPasswordAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import { useUpdateMemberPassword } from "@/hooks/useUser";
 import SpinnerMini from "../SpinnerMini";
+import { useToast } from "@/hooks/use-toast";
+import { useLoading } from "@/context/LoadingContext";
 
 const defaultValues = {
   password: "",
@@ -19,8 +21,9 @@ const defaultValues = {
 };
 
 const UpdatePasswordForm = () => {
+  const { toast } = useToast();
   const router = useRouter();
-  const { mutate, isPending, isError, error } = useUpdateMemberPassword();
+  const { mutate, isPending } = useUpdateMemberPassword();
   const form = useForm<z.infer<typeof passwordUpdateSchema>>({
     resolver: zodResolver(passwordUpdateSchema),
     defaultValues,
@@ -33,10 +36,22 @@ const UpdatePasswordForm = () => {
       password: values.password,
     };
 
-    mutate(data);
-    if (isError) {
-      return;
-    }
+    mutate(data, {
+      onSuccess: () => {
+        toast({
+          title: "Success",
+          description: "Password updated successfully",
+        });
+        form.reset();
+      },
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+      },
+    });
   }
   return (
     <Form {...form}>
@@ -63,7 +78,8 @@ const UpdatePasswordForm = () => {
           control={form.control}
         ></CustomFormField>
         <Button type="submit">
-          {isPending ? <SpinnerMini></SpinnerMini> : "Submit"}
+          Update Password
+          {isPending && <SpinnerMini></SpinnerMini>}
         </Button>
       </form>
     </Form>

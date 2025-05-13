@@ -270,9 +270,7 @@ export const memberUpdateAction = async (data: UserData) => {
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(
-      errorData.message || "Something went wrong. Please try again later"
-    );
+    throw new Error("Something went wrong. Please try again later");
   }
 
   const result = await response.json();
@@ -302,9 +300,7 @@ export const memberReactivateSubscriptionAction = async (
 
   if (!response.ok) {
     const errorData = await response.json();
-    throw new Error(
-      errorData.message || "Something went wrong. Please try again later"
-    );
+    throw new Error("Something went wrong. Please try again later");
   }
 
   const result = await response.json();
