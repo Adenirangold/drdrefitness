@@ -1,7 +1,7 @@
 "use client";
 import { emailAloneSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { set, z } from "zod";
 import { Form } from "../ui/form";
@@ -28,7 +28,7 @@ const EmailOnlyForm = ({
 }) => {
   const { toast } = useToast();
   const router = useRouter();
-  const { isLoading, setIsLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(false);
   const { id, token } = formParams ?? {};
   const defaultValues = {
     email: "",

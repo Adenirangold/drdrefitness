@@ -1,7 +1,7 @@
 "use client";
 import { memberSchema, memberUpdateSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form } from "../ui/form";
@@ -37,7 +37,8 @@ interface SignUpFormProps {
 const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
   const { toast } = useToast();
   const router = useRouter();
-  const { isLoading, setIsLoading } = useLoading();
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const isSelectNeeded = type === "admin" || type === "sign-up";
   const isEditMode = type === "edit";

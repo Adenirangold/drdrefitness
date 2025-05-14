@@ -21,7 +21,7 @@ const defaultValues = {
 const LoginForm = () => {
   const { toast } = useToast();
   const router = useRouter();
-  const { isLoading, setIsLoading } = useLoading();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
