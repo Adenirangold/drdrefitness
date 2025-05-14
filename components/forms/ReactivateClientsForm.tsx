@@ -15,11 +15,12 @@ import {
   getPlanNameOptions,
   getPlanTypeOptions,
 } from "@/lib/utils";
-import { memberReactivateSubscriptionAction } from "@/lib/actions";
+
 import { usePlans } from "@/hooks/usePlan";
 import { useReactivateSubscription } from "@/hooks/useUser";
 import SpinnerMini from "../SpinnerMini";
 import Spinner from "../Spinner";
+import { useToast } from "@/hooks/use-toast";
 
 const defaultValues = {
   planType: "individual" as "individual" | "couple" | "family",
@@ -38,6 +39,7 @@ const ReactivateClientsForm = () => {
   const planData = data?.data || [];
 
   const router = useRouter();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof resubscribePlanSchema>>({
     resolver: zodResolver(resubscribePlanSchema),
@@ -52,11 +54,6 @@ const ReactivateClientsForm = () => {
     });
     return () => subscription.unsubscribe();
   }, [form]);
-
-  // const branchOption = getBranchOptions(planData, selectedLocation);
-  // const nameOption = getPlanNameOptions(planData);
-  // const planTypeOption = getPlanTypeOptions(planData);
-  // const locationOption = getLocationOptions(planData);
 
   const branchOption = useMemo(
     () => getBranchOptions(planData, selectedLocation),
@@ -83,10 +80,17 @@ const ReactivateClientsForm = () => {
       gymBranch: values.gymBranch,
     };
 
-    reactivateMutation.mutate(data);
-    if (reactivateMutation.isError) {
-      return;
-    }
+    reactivateMutation.mutate(data, {
+      onSuccess: () => {},
+      onError: (error) => {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      },
+    });
   }
   return (
     <Form {...form}>
@@ -125,11 +129,8 @@ const ReactivateClientsForm = () => {
         ></CustomFormField>
 
         <Button type="submit">
-          {reactivateMutation.isPending ? (
-            <SpinnerMini></SpinnerMini>
-          ) : (
-            "Reactivate Subscription"
-          )}
+          Reactivate Subscription
+          {reactivateMutation.isPending && <SpinnerMini></SpinnerMini>}
         </Button>
       </form>
     </Form>

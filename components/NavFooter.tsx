@@ -20,9 +20,9 @@ export function NavFooter() {
   const handleLogout = async () => {
     setLoadingHref("/sign-in");
     const result = await logOutAction();
-    if (result.data?.message) {
+    if (result?.data?.message) {
       router.replace("/sign-in");
-      setLoadingHref(null);
+      return;
     }
     setLoadingHref(null);
   };

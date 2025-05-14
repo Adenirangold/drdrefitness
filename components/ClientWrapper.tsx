@@ -20,7 +20,6 @@ export function ClientWrapper({ children }: { children: React.ReactNode }) {
       : null;
 
     if (loadingHref && normalizedPathname === normalizedLoadingHref) {
-      console.log("Clearing loading state in ClientWrapper");
       setLoadingHref(null);
     }
   }, [pathname, loadingHref, setLoadingHref]);

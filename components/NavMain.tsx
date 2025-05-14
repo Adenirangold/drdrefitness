@@ -39,7 +39,6 @@ export function NavMain({ items }: { items: NavItem[] }) {
           }, 100);
         } else {
           setLoadingHref(href);
-          console.log("Set loadingHref:", href);
         }
       }
     },

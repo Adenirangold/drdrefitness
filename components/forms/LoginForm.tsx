@@ -11,6 +11,7 @@ import { loginAction } from "@/lib/actions";
 import { useRouter } from "next/navigation";
 import SpinnerMini from "../SpinnerMini";
 import { useToast } from "@/hooks/use-toast";
+import { useLoading } from "@/context/LoadingContext";
 
 const defaultValues = {
   email: "",
@@ -20,7 +21,7 @@ const defaultValues = {
 const LoginForm = () => {
   const { toast } = useToast();
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, setIsLoading } = useLoading();
 
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
@@ -46,7 +47,7 @@ const LoginForm = () => {
 
     const role = result.data?.role;
 
-    router.push(`/${role}/dashboard`);
+    router.replace(`/${role}/dashboard`);
   }
   return (
     <Form {...form}>
@@ -66,7 +67,8 @@ const LoginForm = () => {
           control={form.control}
         ></CustomFormField>
         <Button type="submit">
-          {isLoading ? <SpinnerMini></SpinnerMini> : "Log In"}
+          Log In
+          {isLoading && <SpinnerMini></SpinnerMini>}
         </Button>
       </form>
     </Form>
