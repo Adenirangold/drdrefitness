@@ -12,6 +12,8 @@ import {
   Clipboard,
   ClipboardPlus,
   ChartNoAxesCombined,
+  QrCode,
+  UserCheck,
 } from "lucide-react";
 
 export const GENDER_RADIO_GROUP = [
@@ -109,14 +111,14 @@ export const ADMIN_NAV = [
     isActive: true,
   },
   {
-    title: "Add Member",
-    url: "/admin/users",
-    icon: UserPlus,
+    title: "Logger",
+    url: "/admin/logger-checker",
+    icon: UserCheck,
   },
   {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: Settings,
+    title: "QR Code",
+    url: "/admin/qr-code",
+    icon: QrCode,
   },
 ];
 
