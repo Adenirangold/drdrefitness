@@ -1,9 +1,9 @@
 "use client";
 import { adminSchema, adminSchemaUpdate, loginSchema } from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { Form } from "../ui/form";
 import CustomFormField, { FormFieldType } from "../CustomFormField";
 import { Button } from "../ui/button";
@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import SpinnerMini from "../SpinnerMini";
 import { getBranches, getDirtyData, locationItems } from "@/lib/utils";
 import { useAddAdmin, useEditAdmin } from "@/hooks/useAdmin";
+import { useToast } from "@/hooks/use-toast";
 
 const AdminForm = ({
   edit,
@@ -21,9 +22,12 @@ const AdminForm = ({
   data?: AdminData;
   closeModal?: () => void;
 }) => {
+  const { toast } = useToast();
   const router = useRouter();
   const addAdminMutation = useAddAdmin();
   const editAdminMutation = useEditAdmin();
+  const [isloading, setIsLoading] = useState(false);
+
   const defaultValues = {
     email: edit ? data?.email : "",
     phoneNumber: edit ? data?.phoneNumber : "",
@@ -45,21 +49,8 @@ const AdminForm = ({
     [selectedLocation]
   );
 
-  useEffect(() => {
-    if (addAdminMutation.isSuccess) {
-      router.push("/director/manage-admins");
-    }
-    if (editAdminMutation.isSuccess && closeModal) {
-      closeModal();
-    }
-  }, [
-    addAdminMutation.isSuccess,
-    editAdminMutation.isSuccess,
-    router,
-    closeModal,
-  ]);
-
   async function onSubmit(values: z.infer<typeof adminFormSchema>) {
+    setIsLoading(true);
     // console.log(values);
 
     if (edit) {
@@ -70,9 +61,26 @@ const AdminForm = ({
         _id: data?._id,
       };
 
-      console.log(updatedData);
-
-      editAdminMutation.mutate(updatedData);
+      editAdminMutation.mutate(updatedData, {
+        onSuccess: () => {
+          if (closeModal) {
+            closeModal();
+          }
+          toast({
+            title: "Success",
+            description: "Your changes were saved successfully",
+          });
+        },
+        onError: (error) => {
+          setIsLoading(false);
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        },
+      });
     } else {
       const data = {
         email: values.email!,
@@ -87,7 +95,24 @@ const AdminForm = ({
         },
       };
 
-      addAdminMutation.mutate(data);
+      addAdminMutation.mutate(data, {
+        onSuccess: () => {
+          router.push("/director/manage-admins");
+          toast({
+            title: "Success",
+            description: "Admin Added successfully",
+          });
+        },
+        onError: (error) => {
+          setIsLoading(false);
+          toast({
+            title: "Error",
+            description: error.message,
+            variant: "destructive",
+          });
+          return;
+        },
+      });
     }
   }
   return (
@@ -138,7 +163,7 @@ const AdminForm = ({
         ></CustomFormField>
 
         <Button type="submit">
-          {addAdminMutation.isPending || editAdminMutation.isPending ? (
+          {isloading ? (
             <SpinnerMini></SpinnerMini>
           ) : edit ? (
             "Edit Admin"

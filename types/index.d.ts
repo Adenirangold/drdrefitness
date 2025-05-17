@@ -95,3 +95,10 @@ interface AdminData {
     branch: string;
   };
 }
+
+interface StationData {
+  _id?: string;
+
+  gymLocation: string;
+  gymBranch: string;
+}

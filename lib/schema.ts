@@ -114,4 +114,9 @@ export const adminSchema = z.object({
   }),
 });
 
+export const StationSchema = z.object({
+  gymLocation: z.string().min(2).max(50),
+  gymBranch: z.string().min(2).max(50),
+});
+
 export const adminSchemaUpdate = adminSchema.partial();

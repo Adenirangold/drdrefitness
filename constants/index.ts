@@ -14,6 +14,7 @@ import {
   ChartNoAxesCombined,
   QrCode,
   UserCheck,
+  AlarmClockPlus,
 } from "lucide-react";
 
 export const GENDER_RADIO_GROUP = [
@@ -112,12 +113,12 @@ export const ADMIN_NAV = [
   },
   {
     title: "Logger",
-    url: "/admin/logger-checker",
+    url: "/admin/logger",
     icon: UserCheck,
   },
   {
     title: "QR Code",
-    url: "/admin/qr-code",
+    url: "/admin/qrcode",
     icon: QrCode,
   },
 ];
@@ -153,6 +154,11 @@ export const DIRECTOR_NAV = [
     title: "Create Admin",
     url: "/director/create-admin",
     icon: UserPlus,
+  },
+  {
+    title: "Check-in Station",
+    url: "/director/manage-stations",
+    icon: AlarmClockPlus,
   },
 ];
 
