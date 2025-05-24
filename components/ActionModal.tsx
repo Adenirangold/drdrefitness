@@ -24,7 +24,7 @@ const ActionModal = ({
   setOpen,
   id,
 }: {
-  trigger: string;
+  trigger: any;
   title: string;
   description: string;
   failTriger: string;
