@@ -14,7 +14,7 @@ const publicPaths = [
   "/forgot-password",
 ];
 export async function middleware(request: NextRequest) {
-  console.time("ware");
+  // console.time("ware");
   const isPublicPath = publicPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("authToken")?.value;
 
   if (!token) {
-    console.timeEnd("ware");
+    // console.timeEnd("ware");
     return NextResponse.redirect(new URL("/sign-in", request.url));
   }
 
@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
           ex: CACHE_TTL,
         }
       );
-      console.timeEnd("ware");
+      // console.timeEnd("ware");
 
       return NextResponse.next();
     }
@@ -100,7 +100,7 @@ export async function middleware(request: NextRequest) {
         ex: CACHE_TTL,
       }
     );
-    console.timeEnd("ware");
+    // console.timeEnd("ware");
     console.log("used database");
 
     return NextResponse.next();
