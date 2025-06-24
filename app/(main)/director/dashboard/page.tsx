@@ -1,11 +1,29 @@
+"use client";
 import { columns } from "@/components/table/column";
 import { DataTable } from "@/components/table/data-table";
 import { getAllMembersAction } from "@/lib/actions";
 import React from "react";
 
-const page = async () => {
-  const result = await getAllMembersAction();
-  const data = result.data?.data;
+import { useQuery } from "@tanstack/react-query";
+import { get } from "http";
+import Spinner from "@/components/Spinner";
+
+const page = () => {
+  // const result = await getAllMembersAction();
+  // const data = result.data?.data;
+
+  const { data: memberData, isLoading } = useQuery({
+    queryKey: ["admin-members"],
+    queryFn: getAllMembersAction,
+    refetchInterval: 9000000,
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+  if (isLoading) {
+    return <Spinner></Spinner>;
+  }
+
+  const data = memberData?.data?.data;
 
   return (
     <div className="container mx-auto py-10">
