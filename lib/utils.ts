@@ -189,3 +189,44 @@ export function getLocationItems(
     label: loc.charAt(0).toUpperCase() + loc.slice(1),
   }));
 }
+
+export function getTime(isoString: string) {
+  const date = new Date(isoString);
+
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const ampm = hours >= 12 ? "PM" : "AM";
+
+  hours = hours % 12;
+  hours = hours ? hours : 12; // the hour '0' should be '12'
+
+  const formattedMinutes = minutes < 10 ? "0" + minutes : minutes;
+
+  return `${hours}:${formattedMinutes} ${ampm}`;
+}
+
+export function getSessionLabelById(data: any, currentEntry: any) {
+  const sessionLabels = [
+    "First Session",
+    "Second Session",
+    "Third Session",
+    "Fourth Session",
+    "Fifth Session",
+  ];
+
+  // Step 1: Filter all sessions with same _id
+  const sameIdSessions = data
+    .filter((entry: any) => entry._id === currentEntry._id)
+    .sort(
+      (a: any, b: any) =>
+        new Date(a.checkInTime).getTime() - new Date(b.checkInTime).getTime()
+    );
+
+  const sessionIndex = sameIdSessions.findIndex(
+    (entry: any) =>
+      entry.checkInTime === currentEntry.checkInTime &&
+      entry.checkOutTime === currentEntry.checkOutTime
+  );
+
+  return sessionLabels[sessionIndex] || `${sessionIndex + 1}th Session`;
+}

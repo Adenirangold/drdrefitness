@@ -2,6 +2,7 @@
 import { useAuthenticatedUser } from "@/hooks/useUser";
 import React from "react";
 import Spinner from "./Spinner";
+import { getDaysRemaining } from "@/lib/utils";
 
 interface Plan {
   _id: string;
@@ -85,14 +86,19 @@ const SubscriptionList: React.FC = () => {
                   <span className="font-medium">Status:</span>{" "}
                   <span
                     className={`inline-block px-2 py-1 rounded-full text-xs ${
-                      index === 0
+                      getDaysRemaining(endDate) > 0
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {index === 0 ? "Current" : "Expired"}
+                    {getDaysRemaining(endDate) > 0 ? "Active" : "Expired"}
                   </span>
                 </p>
+                {index === 0 && (
+                  <p className="text-sm">
+                    <span className="font-small">Latest Subscription</span>{" "}
+                  </p>
+                )}
               </div>
             </div>
           )

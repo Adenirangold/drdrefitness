@@ -893,3 +893,48 @@ export const deleteStation = async (id: string) => {
 
   return result;
 };
+
+export const getCheckInOutMembersRecord = async ({
+  gymLocation,
+  gymBranch,
+  date,
+}: {
+  gymLocation: string;
+  gymBranch: string;
+  date?: Date;
+}) => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+
+  let url = `${config.API_KEY}/checkinout/records/${gymLocation}/${gymBranch}`;
+
+  if (date) {
+    const formattedDate = date.toISOString();
+    url += `?date=${encodeURIComponent(formattedDate)}`;
+  }
+  console.log(url);
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};
