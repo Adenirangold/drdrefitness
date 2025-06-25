@@ -5,15 +5,11 @@ import { getAllMembersAction } from "@/lib/actions";
 import React from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import { get } from "http";
 import Spinner from "@/components/Spinner";
 
 const page = () => {
-  // const result = await getAllMembersAction();
-  // const data = result.data?.data;
-
   const { data: memberData, isLoading } = useQuery({
-    queryKey: ["admin-members"],
+    queryKey: ["all-admin-members"],
     queryFn: getAllMembersAction,
     refetchInterval: 9000000,
     refetchOnMount: false,

@@ -27,11 +27,13 @@ import { DataTablePagination } from "./TablePagination";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  type?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  type,
 }: DataTableProps<TData, TValue>) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -65,19 +67,30 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm shad-input border-0"
         />
+        {!type && (
+          <Input
+            placeholder="Filter name..."
+            value={
+              (table.getColumn("fullName")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) => {
+              return table
+                .getColumn("fullName")
+                ?.setFilterValue(event.target.value);
+            }}
+            className="max-w-sm shad-input border-0"
+          />
+        )}
         <Input
           placeholder="Filter name..."
-          value={
-            (table.getColumn("fullName")?.getFilterValue() as string) ?? ""
-          }
+          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) => {
-            return table
-              .getColumn("fullName")
-              ?.setFilterValue(event.target.value);
+            return table.getColumn("name")?.setFilterValue(event.target.value);
           }}
           className="max-w-sm shad-input border-0"
         />
       </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>

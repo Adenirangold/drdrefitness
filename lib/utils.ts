@@ -230,3 +230,45 @@ export function getSessionLabelById(data: any, currentEntry: any) {
 
   return sessionLabels[sessionIndex] || `${sessionIndex + 1}th Session`;
 }
+
+export function assignSessionLabels(data: any[]) {
+  const sessionLabels = [
+    "First Session",
+    "Second Session",
+    "Third Session",
+    "Fourth Session",
+    "Fifth Session",
+  ];
+
+  // Group entries by _id
+  const grouped: Record<string, any[]> = {};
+
+  data.forEach((entry) => {
+    if (!grouped[entry._id]) {
+      grouped[entry._id] = [];
+    }
+    grouped[entry._id].push(entry);
+  });
+
+  // Assign session labels
+  const result = data.map((entry) => {
+    const group = grouped[entry._id];
+    const sortedGroup = group.sort(
+      (a, b) =>
+        new Date(a.checkInTime).getTime() - new Date(b.checkInTime).getTime()
+    );
+
+    const index = sortedGroup.findIndex(
+      (e) =>
+        e.checkInTime === entry.checkInTime &&
+        e.checkOutTime === entry.checkOutTime
+    );
+
+    return {
+      ...entry,
+      session: sessionLabels[index] || `${index + 1}th Session`,
+    };
+  });
+
+  return result;
+}

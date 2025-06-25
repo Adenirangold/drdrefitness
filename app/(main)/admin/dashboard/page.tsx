@@ -3,14 +3,9 @@ import Spinner from "@/components/Spinner";
 import { columns } from "@/components/table/column";
 import { DataTable } from "@/components/table/data-table";
 import { useAdminMembers } from "@/hooks/useAdminMember";
-import { useAuthenticatedUser } from "@/hooks/useUser";
-import { getAdminMembersAction } from "@/lib/actions";
-import { getDaysRemaining } from "@/lib/utils";
 import React from "react";
 
 const page = () => {
-  // const result = await getAdminMembersAction();
-  // const data = result.data?.data;
   const { data: adminData, isLoading } = useAdminMembers();
   if (isLoading) {
     return <Spinner></Spinner>;
