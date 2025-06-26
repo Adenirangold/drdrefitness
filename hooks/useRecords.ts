@@ -11,7 +11,7 @@ export function useRecords({
   gymBranch: string;
 }) {
   return useQuery({
-    queryKey: ["records"],
+    queryKey: ["records", gymBranch, gymLocation, date?.toISOString()],
     queryFn: () => getCheckInOutMembersRecord({ date, gymLocation, gymBranch }),
     staleTime: 1000 * 60 * 1,
     refetchOnWindowFocus: true,

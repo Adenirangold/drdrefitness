@@ -272,3 +272,32 @@ export function assignSessionLabels(data: any[]) {
 
   return result;
 }
+
+export const getOrdinalSuffix = (day: number): string => {
+  if (day >= 11 && day <= 13) return "th";
+  switch (day % 10) {
+    case 1:
+      return "st";
+    case 2:
+      return "nd";
+    case 3:
+      return "rd";
+    default:
+      return "th";
+  }
+};
+export const formatDateWithOrdinal = (date: Date | undefined): string => {
+  if (!date) {
+    const today = new Date();
+    const day = today.getDate();
+    const month = today.toLocaleString("default", { month: "long" });
+    const year = today.getFullYear();
+    const suffix = getOrdinalSuffix(day);
+    return `${day}${suffix} of ${month} ${year}`;
+  }
+  const day = date.getDate();
+  const month = date.toLocaleString("default", { month: "long" });
+  const year = date.getFullYear();
+  const suffix = getOrdinalSuffix(day);
+  return `${day}${suffix} of ${month} ${year}`;
+};
