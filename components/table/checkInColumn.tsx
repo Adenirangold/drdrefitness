@@ -1,6 +1,11 @@
 "use client";
 
-import { getTime } from "@/lib/utils";
+import {
+  capitalizeAndConcat,
+  capitalizeFirstLetter,
+  capitalizeFirstLetters,
+  getTime,
+} from "@/lib/utils";
 import { ColumnDef } from "@tanstack/react-table";
 
 export interface MemberCheckInOut {
@@ -20,7 +25,7 @@ export const columns: ColumnDef<MemberCheckInOut>[] = [
   },
   {
     accessorKey: "regNumber",
-    header: "Reg Number",
+    header: "Registration Number",
   },
   {
     accessorKey: "name",
@@ -28,7 +33,7 @@ export const columns: ColumnDef<MemberCheckInOut>[] = [
     cell: ({ row }) => {
       const name = row.original.name;
 
-      return <div>{name}</div>;
+      return <div>{capitalizeAndConcat(...name.split(" "))}</div>;
     },
   },
   {

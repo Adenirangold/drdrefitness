@@ -120,3 +120,7 @@ export const StationSchema = z.object({
 });
 
 export const adminSchemaUpdate = adminSchema.partial();
+
+export const dateSchema = z.object({
+  date: z.coerce.date(),
+});

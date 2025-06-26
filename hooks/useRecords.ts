@@ -13,5 +13,9 @@ export function useRecords({
   return useQuery({
     queryKey: ["records"],
     queryFn: () => getCheckInOutMembersRecord({ date, gymLocation, gymBranch }),
+    staleTime: 1000 * 60 * 1,
+    refetchOnWindowFocus: true,
+    refetchOnReconnect: true,
+    refetchOnMount: true,
   });
 }
