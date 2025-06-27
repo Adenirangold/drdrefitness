@@ -1,6 +1,7 @@
 "use client";
 
 import Spinner from "@/components/Spinner";
+import SpinnerSmall from "@/components/SpinnerSmall";
 import { columns } from "@/components/table/checkInColumn";
 import { DataTable } from "@/components/table/data-table";
 import { Input } from "@/components/ui/input";
@@ -167,7 +168,7 @@ const MemberTable = () => {
       )}
       {recordIsLoading ? (
         <div className="flex justify-center items-center h-64">
-          <Spinner />
+          <SpinnerSmall />
         </div>
       ) : (
         <DataTable type="checkInOut" columns={columns} data={data} />
