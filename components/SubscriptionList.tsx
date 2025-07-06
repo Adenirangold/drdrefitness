@@ -30,7 +30,10 @@ const SubscriptionList: React.FC = () => {
   if (isLoading) {
     return <Spinner></Spinner>;
   }
+
   const subscriptionHistory = data?.data?.membershipHistory || [];
+
+  console.log(subscriptionHistory);
 
   const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -54,21 +57,21 @@ const SubscriptionList: React.FC = () => {
             >
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center text-xl font-semibold mr-4">
-                  {plan.planType[0].toUpperCase()}
+                  {plan?.planType[0].toUpperCase()}
                 </div>
                 <div>
                   <h2 className="text-lg font-semibold text-gray-800 capitalize">
-                    {plan.planType} Plan
+                    {plan?.planType} Plan
                   </h2>
                   <p className="text-sm text-gray-500 capitalize">
-                    {plan.name} - {plan.gymBranch}, {plan.gymLocation}
+                    {plan?.name} - {plan?.gymBranch}, {plan?.gymLocation}
                   </p>
                 </div>
               </div>
               <div className="space-y-2">
                 <p className="text-sm text-gray-600">
                   <span className="font-medium">Price:</span> ₦
-                  {plan.price.toLocaleString()}
+                  {plan?.price.toLocaleString()}
                 </p>
                 <p className="text-sm text-gray-600">
                   <span className="font-medium">Start Date:</span>{" "}
@@ -79,8 +82,8 @@ const SubscriptionList: React.FC = () => {
                   {formatDate(endDate)}
                 </p>
                 <p className="text-sm text-gray-600">
-                  <span className="font-medium">Duration:</span> {plan.duration}{" "}
-                  days
+                  <span className="font-medium">Duration:</span>{" "}
+                  {plan?.duration} days
                 </p>
                 <p className="text-sm">
                   <span className="font-medium">Status:</span>{" "}

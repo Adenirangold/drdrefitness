@@ -81,14 +81,18 @@ export function DataTable<TData, TValue>({
             className="max-w-sm shad-input border-0"
           />
         )}
-        <Input
-          placeholder="Filter name..."
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-          onChange={(event) => {
-            return table.getColumn("name")?.setFilterValue(event.target.value);
-          }}
-          className="max-w-sm shad-input border-0"
-        />
+        {type && (
+          <Input
+            placeholder="Filter name..."
+            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+            onChange={(event) => {
+              return table
+                .getColumn("name")
+                ?.setFilterValue(event.target.value);
+            }}
+            className="max-w-sm shad-input border-0"
+          />
+        )}
       </div>
 
       <div className="rounded-md border">
