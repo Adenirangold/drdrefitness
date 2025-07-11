@@ -27,6 +27,7 @@ const defaultValues = {
   gymLocation: "",
   gymBranch: "",
   name: "",
+  couponCode: "",
 };
 
 const ReactivateClientsForm = () => {
@@ -70,7 +71,7 @@ const ReactivateClientsForm = () => {
   );
 
   async function onSubmit(values: z.infer<typeof resubscribePlanSchema>) {
-    console.log(values);
+    // console.log(values);
     const paymentType = "reactivate";
     document.cookie = `paymentRedirectType=${paymentType}; path=/; max-age=3600; SameSite=Lax; Secure`;
     const data = {
@@ -78,7 +79,10 @@ const ReactivateClientsForm = () => {
       planType: values.planType,
       gymLocation: values.gymLocation,
       gymBranch: values.gymBranch,
+      ...(values.couponCode ? { couponCode: values.couponCode } : {}),
     };
+
+    // console.log(data);
 
     reactivateMutation.mutate(data, {
       onSuccess: () => {},
@@ -126,6 +130,13 @@ const ReactivateClientsForm = () => {
           placeholder="Choose Your Plan"
           control={form.control}
           items={nameOption}
+        ></CustomFormField>
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          label="Coupon Code"
+          name="couponCode"
+          placeholder="Enter Coupon Code (optional)"
+          control={form.control}
         ></CustomFormField>
 
         <Button type="submit">

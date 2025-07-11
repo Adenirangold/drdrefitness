@@ -300,6 +300,8 @@ export const memberReactivateSubscriptionAction = async (
 
   if (!response.ok) {
     const errorData = await response.json();
+    console.log(errorData);
+
     throw new Error("Something went wrong. Please try again later");
   }
 

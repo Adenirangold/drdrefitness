@@ -25,6 +25,7 @@ interface UserData {
     name: string;
     gymLocation: string;
     gymBranch: string;
+    couponCode?: string;
   };
 }
 

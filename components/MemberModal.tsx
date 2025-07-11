@@ -161,12 +161,7 @@ const MemberModal = ({ member }: { member: MemberResponse }) => {
                       ).toLocaleDateString()
                     : "N/A"}
                 </p>
-                <p className="text-gray-700">
-                  <strong className="font-medium text-gray-900">
-                    Auto Renew:
-                  </strong>{" "}
-                  {member.currentSubscription.autoRenew ? "Yes" : "No"}
-                </p>
+
                 <p className="text-gray-700">
                   <strong className="font-medium text-gray-900">
                     Payment Method:
@@ -274,23 +269,34 @@ const MemberModal = ({ member }: { member: MemberResponse }) => {
             {member.membershipHistory?.length ? (
               <ul className="list-disc pl-5 space-y-2">
                 {member.membershipHistory.map((history, index) => (
-                  <li key={index} className="text-gray-700">
-                    <span className="font-medium">
-                      Plan: {history.plan?.name || "N/A"} (
-                      {history.plan?.planType || "N/A"},{" "}
-                      {history.plan?.duration || "N/A"} days, ₦
-                      {history.plan?.price || "N/A"})
-                    </span>
-                    <br />
-                    Start:{" "}
-                    {history.startDate
-                      ? new Date(history.startDate).toLocaleDateString()
-                      : "N/A"}
-                    , End:{" "}
-                    {history.endDate
-                      ? new Date(history.endDate).toLocaleDateString()
-                      : "N/A"}
-                  </li>
+                  <div key={index}>
+                    <li className="text-gray-700">
+                      <span className="font-medium">
+                        Plan: {history.plan?.name || "N/A"} (
+                        {history.plan?.planType || "N/A"},{" "}
+                        {history.plan?.duration || "N/A"} days, ₦
+                        {history.plan?.price || "N/A"})
+                      </span>
+                      <br />
+                      Start:{" "}
+                      {history.startDate
+                        ? new Date(history.startDate).toLocaleDateString()
+                        : "N/A"}
+                      , End:{" "}
+                      {history.endDate
+                        ? new Date(history.endDate).toLocaleDateString()
+                        : "N/A"}
+                    </li>
+                    {index === 0 && (
+                      <p className="text-gray-700">
+                        <span
+                          className={`inline-block px-2 py-1 rounded-full text-sm ${"bg-green-100 text-green-800"}`}
+                        >
+                          Latest Subscription
+                        </span>
+                      </p>
+                    )}
+                  </div>
                 ))}
               </ul>
             ) : (

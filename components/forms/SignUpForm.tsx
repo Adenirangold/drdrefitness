@@ -93,6 +93,10 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
           ? userData?.data?.emergencyContact?.relationship ?? ""
           : "",
       },
+
+      currentSubscription: {
+        couponCode: "",
+      },
     },
   });
 
@@ -158,8 +162,40 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
             "Inviation accepted successfully. Please sign in with the email and password you used to register.",
         });
       } else if (type === "sign-up") {
+        console.log(values);
+
+        const { currentSubscription, ...rest } = values;
+
+        let sanitizedCurrentSubscription:
+          | UserData["currentSubscription"]
+          | undefined = undefined;
+
+        if (
+          currentSubscription?.planType &&
+          currentSubscription?.name &&
+          currentSubscription?.gymLocation &&
+          currentSubscription?.gymBranch
+        ) {
+          sanitizedCurrentSubscription = {
+            planType: currentSubscription.planType,
+            name: currentSubscription.name,
+            gymLocation: currentSubscription.gymLocation,
+            gymBranch: currentSubscription.gymBranch,
+            ...(currentSubscription.couponCode
+              ? { couponCode: currentSubscription.couponCode }
+              : {}),
+          };
+        }
+
+        const sanitizedValues: UserData = {
+          ...rest,
+          currentSubscription: sanitizedCurrentSubscription,
+        };
+
+        console.log("Sanitized Values:", sanitizedValues);
+
         setIsLoading(true);
-        const result = await signUpAction(values);
+        const result = await signUpAction(sanitizedValues);
         if (result.error) {
           setIsLoading(false);
           toast({
@@ -327,6 +363,13 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
               placeholder="Choose Your Plan"
               control={form.control}
               items={nameOptions}
+            />
+            <CustomFormField
+              fieldType={FormFieldType.INPUT}
+              label="Coupon Code"
+              name="currentSubscription.couponCode"
+              placeholder="Enter Coupon Code (optional)"
+              control={form.control}
             />
           </div>
         )}

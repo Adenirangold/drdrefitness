@@ -35,12 +35,25 @@ export const planSchema = z.object({
   duration: z.coerce.number().positive().optional(),
 });
 
-export const currentSubscriptionPlanSchema = planSchema.pick({
-  planType: true,
-  name: true,
-  gymBranch: true,
-  gymLocation: true,
-});
+export const currentSubscriptionPlanSchema = planSchema
+  .pick({
+    planType: true,
+    name: true,
+    gymBranch: true,
+    gymLocation: true,
+  })
+  .extend({
+    couponCode: z
+      .string()
+      .optional()
+      .refine(
+        (val) =>
+          val === undefined || val.trim().length === 0 || val.trim().length > 0,
+        {
+          message: "Coupon code cannot be just spaces",
+        }
+      ),
+  });
 
 export const memberSchema = z.object({
   firstName: z
@@ -98,7 +111,18 @@ export const passwordUpdateSchema = z
 export const memberUpdateSchema = memberSchema.partial();
 export const planUpdateSchema = planSchema.partial();
 
-export const resubscribePlanSchema = planSchema.partial();
+export const resubscribePlanSchema = planSchema.partial().extend({
+  couponCode: z
+    .string()
+    .optional()
+    .refine(
+      (val) =>
+        val === undefined || val.trim().length === 0 || val.trim().length > 0,
+      {
+        message: "Coupon code cannot be just spaces",
+      }
+    ),
+});
 
 export const adminSchema = z.object({
   email: z.string().email("Invalid email address"),
