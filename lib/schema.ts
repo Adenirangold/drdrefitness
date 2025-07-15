@@ -45,6 +45,7 @@ export const currentSubscriptionPlanSchema = planSchema
   .extend({
     couponCode: z
       .string()
+      .trim()
       .optional()
       .refine(
         (val) =>
@@ -114,6 +115,7 @@ export const planUpdateSchema = planSchema.partial();
 export const resubscribePlanSchema = planSchema.partial().extend({
   couponCode: z
     .string()
+    .trim()
     .optional()
     .refine(
       (val) =>
@@ -148,3 +150,31 @@ export const adminSchemaUpdate = adminSchema.partial();
 export const dateSchema = z.object({
   date: z.coerce.date(),
 });
+
+export const couponSchema = z
+  .object({
+    code: z.string().nonempty("Code is required").trim(),
+    discountType: z.enum(["percentage", "fixed"], {
+      errorMap: () => ({
+        message: "Discount type must be 'percentage' or 'fixed'",
+      }),
+    }),
+    discountValue: z.coerce
+      .number()
+      .min(0, "Discount value must be non-negative")
+      .positive("Discount value is required"),
+    applicablePlans: z.array(z.string()).optional(),
+    validFrom: z.coerce.date(),
+    validUntil: z.coerce.date(),
+    maxUses: z.coerce
+      .number()
+      .min(0, "Max uses must be non-negative")
+      .nullable()
+      .optional(),
+  })
+  .refine((data) => new Date(data.validFrom) < new Date(data.validUntil), {
+    message: "End Date must be greater than Start Date",
+    path: ["validUntil"],
+  });
+
+export const couponUpdateSchema = couponSchema.innerType().partial();

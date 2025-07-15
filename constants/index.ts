@@ -8,7 +8,8 @@ import {
   User,
   UserPlus,
   Users,
-  Settings,
+  Ticket,
+  TicketPlus,
   Clipboard,
   ClipboardPlus,
   ChartNoAxesCombined,
@@ -136,24 +137,35 @@ export const DIRECTOR_NAV = [
     icon: ChartNoAxesCombined,
   },
   {
+    title: "Create Plan",
+    url: "/director/create-plan",
+    icon: ClipboardPlus,
+  },
+  {
     title: "Plan Management",
     url: "/director/manage-plans",
     icon: Clipboard,
   },
   {
-    title: "Create Plan",
-    url: "/director/create-plan",
-    icon: ClipboardPlus,
+    title: "Create Admin",
+    url: "/director/create-admin",
+    icon: UserPlus,
   },
   {
     title: "Admin Management",
     url: "/director/manage-admins",
     icon: User,
   },
+
   {
-    title: "Create Admin",
-    url: "/director/create-admin",
-    icon: UserPlus,
+    title: "Create Coupons",
+    url: "/director/create-coupon",
+    icon: TicketPlus,
+  },
+  {
+    title: "Manage Coupons",
+    url: "/director/manage-coupon",
+    icon: Ticket,
   },
   {
     title: "Check-in Station",
