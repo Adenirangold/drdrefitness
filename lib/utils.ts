@@ -103,6 +103,9 @@ export function capitalizeAndConcat(...strings: string[]): string {
 export function capitalizeFirstLetters(...strings: string[]): string {
   return strings.map((str) => str.charAt(0).toUpperCase()).join("");
 }
+export function capitalizeAllLetters(strings: string): string {
+  return strings.toUpperCase();
+}
 
 export function capitalizeFirstLetter(str: string) {
   if (typeof str !== "string" || str.length === 0) {

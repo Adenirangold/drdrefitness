@@ -103,3 +103,13 @@ interface StationData {
   gymLocation: string;
   gymBranch: string;
 }
+
+interface CouponData {
+  applicablePlans: string[];
+  code: string;
+  discountType: string;
+  discountValue: number;
+  maxUses: number | null;
+  validFrom: Date;
+  validUntil: Date;
+}

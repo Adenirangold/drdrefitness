@@ -26,6 +26,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { capitalizeAllLetters } from "@/lib/utils";
+import { X } from "lucide-react";
 
 const CouponForm = () => {
   const { toast } = useToast();
@@ -73,6 +75,19 @@ const CouponForm = () => {
           plan.gymLocation === selectedLocation
       )
     : [];
+
+  const selectedPlansByBranch = plans
+    .filter((plan: any) =>
+      (form.getValues("applicablePlans") ?? []).includes(plan._id)
+    )
+    .reduce((acc: any, plan: any) => {
+      const branch = plan.gymBranch;
+      if (!acc[branch]) {
+        acc[branch] = { location: plan.gymLocation, plans: [] };
+      }
+      acc[branch].plans.push(plan);
+      return acc;
+    }, {} as Record<string, { location: string; plans: any }>);
 
   async function onSubmit(values: z.infer<typeof couponSchema>) {
     console.log(values);
@@ -163,7 +178,7 @@ const CouponForm = () => {
             </SelectContent>
           </Select>
         </FormItem>
-        {selectedLocation && (
+        {
           <FormItem>
             <FormLabel>Gym Branch</FormLabel>
             <Select
@@ -186,9 +201,9 @@ const CouponForm = () => {
               </SelectContent>
             </Select>
           </FormItem>
-        )}
+        }
 
-        {selectedBranch && (
+        {
           <FormField
             control={form.control}
             name="applicablePlans"
@@ -202,31 +217,11 @@ const CouponForm = () => {
                     render={({ field: { onChange, value } }) => (
                       <CustomSelect
                         isMulti
-                        // options={availablePlans.map((plan: any) => ({
-                        //   value: plan._id,
-                        //   label: `${plan.name} - ${plan.planType}`,
-                        // }))}
-                        // value={availablePlans
-                        //   .filter((plan: any) =>
-                        //     selectedPlanIds.includes(plan._id)
-                        //   )
-                        //   .map((plan: any) => ({
-                        //     value: plan._id,
-                        //     label: `${plan.name} - ${plan.planType}`,
-                        //   }))}
-                        // onChange={(selected) => {
-                        //   const newPlanIds = selected.map(
-                        //     (option) => option.value
-                        //   );
-                        //   const updatedPlans = [
-                        //     ...new Set([...selectedPlanIds, ...newPlanIds]),
-                        //   ];
-                        //   setSelectedPlanIds(updatedPlans);
-                        //   onChange(updatedPlans);
-                        // }}
                         options={availablePlans.map((plan: any) => ({
                           value: plan._id,
-                          label: `${plan.name} - ${plan.planType}`,
+                          label: `${capitalizeAllLetters(
+                            plan.gymBranch
+                          )}${" "}BRANCH-${plan.planType}-${plan.name}`,
                         }))}
                         value={plans
                           .filter((plan: any) =>
@@ -234,7 +229,9 @@ const CouponForm = () => {
                           )
                           .map((plan: any) => ({
                             value: plan._id,
-                            label: `${plan.name} - ${plan.planType}`,
+                            label: `${capitalizeAllLetters(
+                              plan.gymBranch
+                            )}${" "}BRANCH-${plan.planType}-${plan.name}`,
                           }))}
                         onChange={(selected) => {
                           const newPlanIds = selected.map(
@@ -254,6 +251,56 @@ const CouponForm = () => {
               </FormItem>
             )}
           />
+        }
+
+        {Object.keys(selectedPlansByBranch).length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              Selected Plans
+            </h2>
+            {(
+              Object.entries(selectedPlansByBranch) as Array<
+                [string, { location: string; plans: any[] }]
+              >
+            ).map(([branch, { location, plans }]) => (
+              <div
+                key={branch}
+                className="mb-4 border border-gray-200 rounded-lg shadow-sm bg-white p-4 hover:shadow-md transition-shadow duration-200"
+              >
+                <div className="border-b border-gray-200 pb-2 mb-3">
+                  <h3 className="text-base font-medium text-gray-900">
+                    {branch} <span className="text-gray-500">({location})</span>
+                  </h3>
+                </div>
+                <div className="space-y-2">
+                  {plans.map((plan: any) => (
+                    <div
+                      key={plan._id}
+                      className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-md hover:bg-gray-100 transition-colors duration-150"
+                    >
+                      <span className="text-sm text-gray-700">
+                        {plan.name} - {plan.planType}
+                      </span>
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => {
+                          const newPlans = selectedPlanIds.filter(
+                            (id) => id !== plan._id
+                          );
+                          setSelectedPlanIds(newPlans);
+                          form.setValue("applicablePlans", newPlans);
+                        }}
+                        className="h-6 w-6 p-0 flex items-center justify-center"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         <Button type="submit" disabled={isLoading}>
