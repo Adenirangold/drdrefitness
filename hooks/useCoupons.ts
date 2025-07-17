@@ -9,13 +9,14 @@ import {
   addPlanAction,
   deletePlanAction,
   editPlanAction,
+  getAllCouponsAction,
   getAllPlanAction,
 } from "../lib/actions";
 
 export function useCoupons() {
   return useQuery({
     queryKey: ["coupons"],
-    queryFn: getAllPlanAction,
+    queryFn: getAllCouponsAction,
     staleTime: 1000 * 60 * 60,
 
     refetchInterval: 9000000,

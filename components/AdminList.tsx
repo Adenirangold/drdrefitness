@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import ActionModal from "./ActionModal";
 import SpinnerMini from "./SpinnerMini";
 import AdminEditModal from "./AdminEditModal";
+import AdminForm from "./forms/AdminForm";
 
 function AdminList() {
   const { data, isLoading, isError, error } = useAdmin();
@@ -68,6 +69,7 @@ function AdminList() {
               </div>
               <div className="flex justify-end space-x-4">
                 <AdminEditModal data={admin}></AdminEditModal>
+
                 <ActionModal
                   id={admin._id}
                   title={`Are you sure ?`}

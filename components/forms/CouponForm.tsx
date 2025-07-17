@@ -30,7 +30,15 @@ import { capitalizeAllLetters } from "@/lib/utils";
 import { X } from "lucide-react";
 import { useAddCoupons } from "@/hooks/useCoupons";
 
-const CouponForm = () => {
+const CouponForm = ({
+  edit,
+  data,
+  closeModal,
+}: {
+  edit?: boolean;
+  data?: CouponData;
+  closeModal?: () => void;
+}) => {
   const { toast } = useToast();
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -41,17 +49,23 @@ const CouponForm = () => {
   const couponMutation = useAddCoupons();
 
   const plans = useMemo(() => planData?.data || [], [planData]);
+  const applicablePlansIds =
+    data?.applicablePlans.map((plan: any) => plan._id) || [];
 
   const form = useForm<z.infer<typeof couponSchema>>({
     resolver: zodResolver(couponSchema),
     defaultValues: {
-      code: "",
-      discountType: "percentage" as "percentage" | "fixed",
-      discountValue: 0,
-      validFrom: new Date(),
-      validUntil: new Date(),
-      maxUses: 0,
-      applicablePlans: [],
+      code: edit ? data?.code : "",
+      discountType: edit
+        ? data?.discountType === "percentage" || data?.discountType === "fixed"
+          ? data?.discountType
+          : "percentage"
+        : "percentage",
+      discountValue: edit ? data?.discountValue : 0,
+      validFrom: edit ? data?.validFrom : new Date(),
+      validUntil: edit ? data?.validUntil : new Date(),
+      maxUses: edit ? data?.maxUses || 0 : 0,
+      applicablePlans: edit ? applicablePlansIds : [],
     },
   });
 

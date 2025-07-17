@@ -22,6 +22,8 @@ const AdminForm = ({
   data?: AdminData;
   closeModal?: () => void;
 }) => {
+  const [openModal, setOpenModal] = useState(false);
+
   const { toast } = useToast();
   const router = useRouter();
   const addAdminMutation = useAddAdmin();

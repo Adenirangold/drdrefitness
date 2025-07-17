@@ -970,3 +970,30 @@ export const addCouponAction = async (data: CouponData) => {
 
   return result;
 };
+
+export const getAllCouponsAction = async () => {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("authToken")?.value || null;
+  const response = await fetch(`${config.API_KEY}/coupons`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Cookie: `authToken=${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(
+      errorData.message || "Something went wrong. Please try again later"
+    );
+  }
+
+  const result = await response.json();
+
+  if (result.error) {
+    throw new Error(result.error);
+  }
+
+  return result;
+};
