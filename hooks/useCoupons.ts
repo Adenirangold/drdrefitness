@@ -46,12 +46,12 @@ export function useDeleteCoupon() {
   return useMutation<any, Error, string>({
     mutationFn: (id) => deleteCouponAction(id),
     onSuccess: (response) => {
-      console.log("admin deleted sucessfully");
+      console.log("coupon deleted sucessfully");
 
       queryClient.invalidateQueries({ queryKey: ["coupons"] });
     },
     onError: (error) => {
-      console.error("Failed to delete admin:", error);
+      console.error("Failed to delete coupon:", error);
     },
   });
 }
