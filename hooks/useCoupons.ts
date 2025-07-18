@@ -7,6 +7,8 @@ import {
 import {
   addCouponAction,
   addPlanAction,
+  deleteAdminAction,
+  deleteCouponAction,
   deletePlanAction,
   editPlanAction,
   getAllCouponsAction,
@@ -36,6 +38,20 @@ export function useAddCoupons() {
     },
     onError: (error) => {
       console.error("Failed to add coupons:", error);
+    },
+  });
+}
+export function useDeleteCoupon() {
+  const queryClient = useQueryClient();
+  return useMutation<any, Error, string>({
+    mutationFn: (id) => deleteCouponAction(id),
+    onSuccess: (response) => {
+      console.log("admin deleted sucessfully");
+
+      queryClient.invalidateQueries({ queryKey: ["coupons"] });
+    },
+    onError: (error) => {
+      console.error("Failed to delete admin:", error);
     },
   });
 }

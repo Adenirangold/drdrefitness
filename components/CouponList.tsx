@@ -1,14 +1,33 @@
 "use client";
-import { useCoupons } from "@/hooks/useCoupons";
+import { useCoupons, useDeleteCoupon } from "@/hooks/useCoupons";
 import { formatDateString } from "@/lib/utils";
-import React from "react";
+import React, { useState } from "react";
+import ActionModal from "./ActionModal";
 
 function CouponList() {
   const { data: couponData, isLoading, isError, error } = useCoupons();
+  const deleteCouponMutation = useDeleteCoupon();
+  const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null);
+  const [openModalPlanId, setOpenModalPlanId] = useState<string | null>(null);
 
   const data = couponData?.data || [];
 
-  //   console.log(data);
+  console.log(data);
+
+  const handleDelete = async (id: string) => {
+    console.log(`Initiating deletion for plan: ${id}`);
+    setDeletingPlanId(id);
+    setOpenModalPlanId(id);
+    try {
+      await deleteCouponMutation.mutateAsync(id);
+      setOpenModalPlanId(null);
+      setDeletingPlanId(null);
+    } catch (err) {
+      console.error("Failed to delete plan:", err);
+      setDeletingPlanId(null);
+      setOpenModalPlanId(null);
+    }
+  };
 
   return (
     <div className="container mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -80,12 +99,19 @@ function CouponList() {
                 </div>
               </div>
               <div className="mt-6 flex justify-end space-x-3">
-                <button
-                  onClick={() => {}}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
-                >
-                  Delete
-                </button>
+                <ActionModal
+                  id={coupon._id}
+                  title={`Are you sure ?`}
+                  description={`This action cannot be undone. This action will permanently delete this coupon with code ${coupon.code}.`}
+                  trigger="Delete"
+                  sucessTriger={"Delete Admin"}
+                  failTriger="Cancel"
+                  onSucessClick={() => handleDelete(coupon._id!)}
+                  open={openModalPlanId === coupon._id}
+                  setOpen={(isOpen) =>
+                    setOpenModalPlanId(isOpen ? coupon?._id ?? null : null)
+                  }
+                ></ActionModal>
               </div>
             </div>
           </div>
