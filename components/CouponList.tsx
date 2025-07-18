@@ -2,14 +2,13 @@
 import { useCoupons } from "@/hooks/useCoupons";
 import { formatDateString } from "@/lib/utils";
 import React from "react";
-import CouponEditModal from "./CouponEditModal";
 
 function CouponList() {
   const { data: couponData, isLoading, isError, error } = useCoupons();
 
   const data = couponData?.data || [];
 
-  console.log(data);
+  //   console.log(data);
 
   return (
     <div className="container mx-auto p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
@@ -80,8 +79,7 @@ function CouponList() {
                   )}
                 </div>
               </div>
-              <div className="mt-6 flex justify-between space-x-3">
-                <CouponEditModal data={data}></CouponEditModal>
+              <div className="mt-6 flex justify-end space-x-3">
                 <button
                   onClick={() => {}}
                   className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
