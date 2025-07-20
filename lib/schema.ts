@@ -79,6 +79,10 @@ export const memberSchema = z.object({
   currentSubscription: currentSubscriptionPlanSchema.optional(),
 });
 
+export const groupMemberSchema = memberSchema.omit({
+  currentSubscription: true,
+});
+
 export const loginSchema = memberSchema.pick({
   email: true,
   password: true,
@@ -109,7 +113,9 @@ export const passwordUpdateSchema = z
     path: ["confirmPassword"],
   });
 
-export const memberUpdateSchema = memberSchema.partial();
+export const memberUpdateSchema = memberSchema
+  .omit({ currentSubscription: true })
+  .partial();
 export const planUpdateSchema = planSchema.partial();
 
 export const resubscribePlanSchema = planSchema.partial().extend({

@@ -9,6 +9,7 @@ function CouponList() {
   const deleteCouponMutation = useDeleteCoupon();
   const [deletingPlanId, setDeletingPlanId] = useState<string | null>(null);
   const [openModalPlanId, setOpenModalPlanId] = useState<string | null>(null);
+  const [submitLoading, setSubmitLoading] = useState(false);
 
   const data = couponData?.data || [];
 
@@ -16,6 +17,7 @@ function CouponList() {
 
   const handleDelete = async (id: string) => {
     console.log(`Initiating deletion for plan: ${id}`);
+    setSubmitLoading(true);
     setDeletingPlanId(id);
     setOpenModalPlanId(id);
     try {
@@ -24,6 +26,7 @@ function CouponList() {
       setDeletingPlanId(null);
     } catch (err) {
       console.error("Failed to delete plan:", err);
+      setSubmitLoading(false);
       setDeletingPlanId(null);
       setOpenModalPlanId(null);
     }
@@ -104,10 +107,11 @@ function CouponList() {
                   title={`Are you sure ?`}
                   description={`This action cannot be undone. This action will permanently delete this coupon with code ${coupon.code}.`}
                   trigger="Delete"
-                  sucessTriger={"Delete Admin"}
+                  sucessTriger={"Delete Coupon"}
                   failTriger="Cancel"
                   onSucessClick={() => handleDelete(coupon._id!)}
                   open={openModalPlanId === coupon._id}
+                  loading={submitLoading}
                   setOpen={(isOpen) =>
                     setOpenModalPlanId(isOpen ? coupon?._id ?? null : null)
                   }

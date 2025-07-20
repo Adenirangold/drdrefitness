@@ -2,7 +2,7 @@
 import { useAuthenticatedUser } from "@/hooks/useUser";
 import React from "react";
 import Spinner from "./Spinner";
-import { getDaysRemaining } from "@/lib/utils";
+import { capitalizeFirstLetter, getDaysRemaining } from "@/lib/utils";
 
 interface Plan {
   _id: string;
@@ -32,6 +32,7 @@ const SubscriptionList: React.FC = () => {
   }
 
   const subscriptionHistory = data?.data?.membershipHistory || [];
+  const status = data?.data?.currentSubscription.subscriptionStatus;
 
   console.log(subscriptionHistory);
 
@@ -89,12 +90,12 @@ const SubscriptionList: React.FC = () => {
                   <span className="font-medium">Status:</span>{" "}
                   <span
                     className={`inline-block px-2 py-1 rounded-full text-xs ${
-                      getDaysRemaining(endDate) > 0
+                      index === 0 && status === "active"
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
                     }`}
                   >
-                    {getDaysRemaining(endDate) > 0 ? "Active" : "Expired"}
+                    {index === 0 ? capitalizeFirstLetter(status) : "Expired"}
                   </span>
                 </p>
                 {index === 0 && (

@@ -1,5 +1,9 @@
 "use client";
-import { memberSchema, memberUpdateSchema } from "@/lib/schema";
+import {
+  groupMemberSchema,
+  memberSchema,
+  memberUpdateSchema,
+} from "@/lib/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -63,7 +67,14 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
 
   const updateMemberMutation = useUpdateMember();
 
-  const schema = isEditMode ? memberUpdateSchema : memberSchema;
+  let schema: z.ZodTypeAny = memberSchema;
+
+  if (type === "edit") {
+    schema = memberUpdateSchema;
+  } else if (type === "group") {
+    schema = groupMemberSchema;
+  }
+
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
@@ -116,6 +127,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
     userIsLoading ||
     isLoading;
 
+  console.log(form.formState.errors);
+
   const onSubmit = async (values: z.infer<typeof schema>) => {
     try {
       if (type === "edit") {
@@ -138,6 +151,8 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ type, formParams = {} }) => {
           },
         });
       } else if (type === "group") {
+        console.log("na me");
+
         setIsLoading(true);
         const result = await MemberAcceptInviteAction(
           values,
