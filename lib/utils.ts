@@ -215,7 +215,6 @@ export function getSessionLabelById(data: any, currentEntry: any) {
     "Third Session",
     "Fourth Session",
     "Fifth Session",
-    "Fifth Session",
   ];
 
   // Step 1: Filter all sessions with same _id
